@@ -1,27 +1,15 @@
 !classDefinition: #Vehicle category: #'4.Replace-if-All'!
 Object subclass: #Vehicle
-	instanceVariableNames: 'state type speed altitude engineType where'
+	instanceVariableNames: 'speed vehicleState vehicleEngine vehicleLimiter'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: '4.Replace-if-All'!
 
-!Vehicle methodsFor: 'initialization' stamp: 'asd 2/Sep/2026, 6:17:06 am (UTC)'!
+!Vehicle methodsFor: 'initialization' stamp: 'asd 2/Sep/2026, 7:41:52 pm (UTC)'!
 !methodProperties: {}!
 initialize
 
-	speed := 0 * kilometer / hour.
-	altitude := 0 * meter! !
-
-!Vehicle methodsFor: 'initialization' stamp: 'NR 7/Sep/2024, 11:26:13 am (UTC)'!
-!methodProperties: {}!
-initializeWithType: typeToTake engineType: anEngineType andSurroundings: surroundings
-
-	state := #Off.
-	type := typeToTake.
-	engineType := anEngineType.
-	where := surroundings.
-	speed := 0 * kilometer / hour.
-	altitude := 0 * meter! !
+	speed := 0 * kilometer / hour.! !
 
 
 !Vehicle methodsFor: 'move' stamp: 'asd 2/Sep/2026, 7:08:02 am (UTC)'!
@@ -48,24 +36,6 @@ accelerate
 	where = #city ifTrue: [ speed > (70 * kilometer / hour) ifTrue: [ speed := 70 * kilometer / hour ] ].
 	where = #openRoad ifTrue: [ speed > (130 * kilometer / hour) ifTrue: [ speed := 130 * kilometer / hour ] ].
 	where = #skies ifTrue: [ speed > (500 * kilometer / hour) ifTrue: [ speed := 500 * kilometer / hour ] ]."! !
-
-!Vehicle methodsFor: 'move' stamp: 'asd 2/Sep/2026, 5:31:16 am (UTC)'!
-!methodProperties: {}!
-altitude
-
-	^ altitude.! !
-
-!Vehicle methodsFor: 'move' stamp: 'asd 2/Sep/2026, 6:53:05 am (UTC)'!
-!methodProperties: {}!
-altitude: anAltitude
-
-	altitude := anAltitude! !
-
-!Vehicle methodsFor: 'move' stamp: 'NR 7/Sep/2024, 9:24:00 pm (UTC)'!
-!methodProperties: {}!
-altitudeAt: anAltitude
-
-	^ altitude = anAltitude! !
 
 !Vehicle methodsFor: 'move' stamp: 'asd 2/Sep/2026, 5:27:57 am (UTC)'!
 !methodProperties: {}!
@@ -145,36 +115,62 @@ motoElectrica
 	^Motorcycle new initializeWithEngine: ElectricEngine new andLimiter: OpenRoadLimiter new .! !
 
 
-!classDefinition: #FlingVehicle category: #'4.Replace-if-All'!
-Vehicle subclass: #FlingVehicle
-	instanceVariableNames: ''
+!classDefinition: #FlyingVehicle category: #'4.Replace-if-All'!
+Vehicle subclass: #FlyingVehicle
+	instanceVariableNames: 'altitude'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: '4.Replace-if-All'!
 
-!FlingVehicle methodsFor: 'move' stamp: 'asd 2/Sep/2026, 6:41:11 am (UTC)'!
+!FlyingVehicle methodsFor: 'move' stamp: 'asd 2/Sep/2026, 6:41:11 am (UTC)'!
 !methodProperties: {}!
 accelerate
 
 	self subclassResponsibility! !
 
+!FlyingVehicle methodsFor: 'move' stamp: 'asd 2/Sep/2026, 7:40:42 pm (UTC)'!
+!methodProperties: {}!
+altitude
 
-!FlingVehicle methodsFor: 'on/off' stamp: 'asd 2/Sep/2026, 6:40:51 am (UTC)'!
+	^ altitude.! !
+
+!FlyingVehicle methodsFor: 'move' stamp: 'asd 2/Sep/2026, 7:40:58 pm (UTC)'!
+!methodProperties: {}!
+altitude: anAltitude
+
+	altitude := anAltitude! !
+
+!FlyingVehicle methodsFor: 'move' stamp: 'asd 2/Sep/2026, 7:41:07 pm (UTC)'!
+!methodProperties: {}!
+altitudeAt: anAltitude
+
+	^ altitude = anAltitude! !
+
+
+!FlyingVehicle methodsFor: 'on/off' stamp: 'asd 2/Sep/2026, 6:40:51 am (UTC)'!
 !methodProperties: {}!
 turnOff
 
 	self subclassResponsibility! !
 
-!FlingVehicle methodsFor: 'on/off' stamp: 'asd 2/Sep/2026, 6:40:56 am (UTC)'!
+!FlyingVehicle methodsFor: 'on/off' stamp: 'asd 2/Sep/2026, 6:40:56 am (UTC)'!
 !methodProperties: {}!
 turnOn
 
 	self subclassResponsibility! !
 
+
+!FlyingVehicle methodsFor: 'initialization' stamp: 'asd 2/Sep/2026, 7:43:11 pm (UTC)'!
+!methodProperties: {}!
+initialize
+
+	speed := 0 * kilometer / hour.
+	altitude := 0 * meter! !
+
 
 !classDefinition: #Helicopter category: #'4.Replace-if-All'!
-FlingVehicle subclass: #Helicopter
-	instanceVariableNames: 'vehicleState vehicleEngine vehicleLimiter'
+FlyingVehicle subclass: #Helicopter
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: '4.Replace-if-All'!
@@ -265,7 +261,7 @@ turnOn
 
 !classDefinition: #Automovile category: #'4.Replace-if-All'!
 LandVehicle subclass: #Automovile
-	instanceVariableNames: 'vehicleState vehicleEngine vehicleLimiter'
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: '4.Replace-if-All'!
@@ -315,7 +311,7 @@ turnOn
 
 !classDefinition: #Motorcycle category: #'4.Replace-if-All'!
 LandVehicle subclass: #Motorcycle
-	instanceVariableNames: 'vehicleState vehicleEngine vehicleLimiter'
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: '4.Replace-if-All'!
@@ -361,72 +357,6 @@ turnOn
 	vehicleState := vehicleState turnOn.! !
 
 
-!classDefinition: #VehicleEngine category: #'4.Replace-if-All'!
-Vehicle subclass: #VehicleEngine
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: '4.Replace-if-All'!
-
-!VehicleEngine methodsFor: 'on/off' stamp: 'asd 2/Sep/2026, 6:04:04 am (UTC)'!
-!methodProperties: {}!
-turnOff
-
-	state := #Off.
-	speed := 0 * kilometer / hour! !
-
-!VehicleEngine methodsFor: 'on/off' stamp: 'asd 2/Sep/2026, 6:03:58 am (UTC)'!
-!methodProperties: {}!
-turnOn
-
-	state := #On! !
-
-
-!classDefinition: #ElectricEngine category: #'4.Replace-if-All'!
-VehicleEngine subclass: #ElectricEngine
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: '4.Replace-if-All'!
-
-!ElectricEngine methodsFor: 'move' stamp: 'asd 1/Sep/2026, 2:13:36 am (UTC)'!
-!methodProperties: {}!
-accelerate: currentSpeed
-	
-	^currentSpeed + ((currentSpeed + (5 * kilometer / hour))* 2).
-! !
-
-
-!classDefinition: #GasolineEngine category: #'4.Replace-if-All'!
-VehicleEngine subclass: #GasolineEngine
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: '4.Replace-if-All'!
-
-!GasolineEngine methodsFor: 'move' stamp: 'asd 2/Sep/2026, 6:34:29 am (UTC)'!
-!methodProperties: {}!
-accelerate: currentSpeed
-	
-	^currentSpeed + (10 * kilometer / hour).
-! !
-
-
-!classDefinition: #JetFueledEngine category: #'4.Replace-if-All'!
-VehicleEngine subclass: #JetFueledEngine
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: '4.Replace-if-All'!
-
-!JetFueledEngine methodsFor: 'move' stamp: 'asd 2/Sep/2026, 6:35:24 am (UTC)'!
-!methodProperties: {}!
-accelerate: currentSpeed
-	
-	^currentSpeed + (((currentSpeed amount + 1) ^ 2) * kilometer / hour).
-! !
-
-
 !classDefinition: #VehiclePowerState category: #'4.Replace-if-All'!
 Vehicle subclass: #VehiclePowerState
 	instanceVariableNames: ''
@@ -434,28 +364,11 @@ Vehicle subclass: #VehiclePowerState
 	poolDictionaries: ''
 	category: '4.Replace-if-All'!
 
-!VehiclePowerState methodsFor: 'move' stamp: 'asd 2/Sep/2026, 1:01:52 am (UTC)'!
+!VehiclePowerState methodsFor: 'move' stamp: 'asd 2/Sep/2026, 7:25:08 pm (UTC)'!
 !methodProperties: {}!
 accelerate
-
-	| acceleration |
-	
-	state = #Off ifTrue: [ self error: self canNotAccelerateErrorMessage ].
-
-	engineType = #ElectricEngine ifTrue: [ acceleration := (speed + (5 * kilometer / hour)) * 2 ].
-	engineType = #GasolineEngine ifTrue: [ acceleration := 10 * kilometer / hour ].
-	engineType = #JetFueledEngine ifTrue: [ acceleration := ((speed amount + 1) ^ 2) * kilometer / hour ].
-
-	type = #Helicopter
-		ifTrue:[ speed := speed + acceleration.
-			altitude := altitude + (5 * meter) ].
-		
-	type = #Motorcycle
-		ifTrue:[ speed := speed + acceleration ].
-		
-	where = #city ifTrue: [ speed > (70 * kilometer / hour) ifTrue: [ speed := 70 * kilometer / hour ] ].
-	where = #openRoad ifTrue: [ speed > (130 * kilometer / hour) ifTrue: [ speed := 130 * kilometer / hour ] ].
-	where = #skies ifTrue: [ speed > (500 * kilometer / hour) ifTrue: [ speed := 500 * kilometer / hour ] ]! !
+"Refactorizar"
+	self error: self canNotAccelerateErrorMessage.! !
 
 
 !VehiclePowerState methodsFor: 'on/off' stamp: 'asd 2/Sep/2026, 6:05:47 am (UTC)'!
@@ -525,49 +438,84 @@ turnOn
 	^self.! !
 
 
-!classDefinition: #VehicleSpeedLimiter category: #'4.Replace-if-All'!
-Vehicle subclass: #VehicleSpeedLimiter
+!classDefinition: #VehicleEngine category: #'4.Replace-if-All'!
+Object subclass: #VehicleEngine
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: '4.Replace-if-All'!
 
-!VehicleSpeedLimiter methodsFor: 'move' stamp: 'asd 2/Sep/2026, 1:01:52 am (UTC)'!
-!methodProperties: {}!
-accelerate
-
-	| acceleration |
-	
-	state = #Off ifTrue: [ self error: self canNotAccelerateErrorMessage ].
-
-	engineType = #ElectricEngine ifTrue: [ acceleration := (speed + (5 * kilometer / hour)) * 2 ].
-	engineType = #GasolineEngine ifTrue: [ acceleration := 10 * kilometer / hour ].
-	engineType = #JetFueledEngine ifTrue: [ acceleration := ((speed amount + 1) ^ 2) * kilometer / hour ].
-
-	type = #Helicopter
-		ifTrue:[ speed := speed + acceleration.
-			altitude := altitude + (5 * meter) ].
-		
-	type = #Motorcycle
-		ifTrue:[ speed := speed + acceleration ].
-		
-	where = #city ifTrue: [ speed > (70 * kilometer / hour) ifTrue: [ speed := 70 * kilometer / hour ] ].
-	where = #openRoad ifTrue: [ speed > (130 * kilometer / hour) ifTrue: [ speed := 130 * kilometer / hour ] ].
-	where = #skies ifTrue: [ speed > (500 * kilometer / hour) ifTrue: [ speed := 500 * kilometer / hour ] ]! !
-
-
-!VehicleSpeedLimiter methodsFor: 'on/off' stamp: 'asd 2/Sep/2026, 6:04:04 am (UTC)'!
+!VehicleEngine methodsFor: 'on/off' stamp: 'asd 2/Sep/2026, 6:04:04 am (UTC)'!
 !methodProperties: {}!
 turnOff
 
 	state := #Off.
 	speed := 0 * kilometer / hour! !
 
-!VehicleSpeedLimiter methodsFor: 'on/off' stamp: 'asd 2/Sep/2026, 6:03:58 am (UTC)'!
+!VehicleEngine methodsFor: 'on/off' stamp: 'asd 2/Sep/2026, 6:03:58 am (UTC)'!
 !methodProperties: {}!
 turnOn
 
 	state := #On! !
+
+
+!classDefinition: #ElectricEngine category: #'4.Replace-if-All'!
+VehicleEngine subclass: #ElectricEngine
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: '4.Replace-if-All'!
+
+!ElectricEngine methodsFor: 'move' stamp: 'asd 1/Sep/2026, 2:13:36 am (UTC)'!
+!methodProperties: {}!
+accelerate: currentSpeed
+	
+	^currentSpeed + ((currentSpeed + (5 * kilometer / hour))* 2).
+! !
+
+
+!classDefinition: #GasolineEngine category: #'4.Replace-if-All'!
+VehicleEngine subclass: #GasolineEngine
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: '4.Replace-if-All'!
+
+!GasolineEngine methodsFor: 'move' stamp: 'asd 2/Sep/2026, 6:34:29 am (UTC)'!
+!methodProperties: {}!
+accelerate: currentSpeed
+	
+	^currentSpeed + (10 * kilometer / hour).
+! !
+
+
+!classDefinition: #JetFueledEngine category: #'4.Replace-if-All'!
+VehicleEngine subclass: #JetFueledEngine
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: '4.Replace-if-All'!
+
+!JetFueledEngine methodsFor: 'move' stamp: 'asd 2/Sep/2026, 6:35:24 am (UTC)'!
+!methodProperties: {}!
+accelerate: currentSpeed
+	
+	^currentSpeed + (((currentSpeed amount + 1) ^ 2) * kilometer / hour).
+! !
+
+
+!classDefinition: #VehicleSpeedLimiter category: #'4.Replace-if-All'!
+Object subclass: #VehicleSpeedLimiter
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: '4.Replace-if-All'!
+
+!VehicleSpeedLimiter methodsFor: 'as yet unclassified' stamp: 'asd 2/Sep/2026, 7:31:04 pm (UTC)'!
+!methodProperties: {}!
+accelerate: aSpeedToCheck
+
+	self subclassResponsibility.! !
 
 
 !classDefinition: #CityLimiter category: #'4.Replace-if-All'!
