@@ -1,27 +1,61 @@
 !classDefinition: #OOStack category: #'Stack-Exercise'!
 Object subclass: #OOStack
-	instanceVariableNames: 'last stack'
+	instanceVariableNames: 'size stack'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
 
-!OOStack methodsFor: 'initialize' stamp: 'asd 3/Sep/2026, 9:20:41 pm (UTC)'!
+!OOStack methodsFor: 'initialize' stamp: 'asd 4/Sep/2026, 6:08:12 pm (UTC)'!
 !methodProperties: {}!
-initialize! !
+initialize
+
+	stack := EmptyStack new.
+	size := 0.! !
 
 
-!OOStack methodsFor: 'accessing' stamp: 'asd 3/Sep/2026, 10:15:53 pm (UTC)'!
+!OOStack methodsFor: 'accessing' stamp: 'asd 4/Sep/2026, 6:21:32 pm (UTC)'!
+!methodProperties: {}!
+pop
+
+	|anObjectToReturn|
+	
+	anObjectToReturn := stack element.
+	stack := stack nextStakedElement.
+	size := size -1.
+	
+	^anObjectToReturn .! !
+
+!OOStack methodsFor: 'accessing' stamp: 'asd 4/Sep/2026, 6:08:55 pm (UTC)'!
 !methodProperties: {}!
 push: anObject
+	
+	|stackedElementToAdd|
+	
+	stackedElementToAdd := StackedElement new.
+	stackedElementToAdd  element: anObject.
+	stackedElementToAdd nextStakedElement: stack.
+	stack := stackedElementToAdd.
+	size := size + 1.! !
 
-	last := anObject .! !
+!OOStack methodsFor: 'accessing' stamp: 'asd 4/Sep/2026, 6:05:44 pm (UTC)'!
+!methodProperties: {}!
+top
+
+	^stack element.! !
 
 
-!OOStack methodsFor: 'status' stamp: 'asd 3/Sep/2026, 10:18:24 pm (UTC)'!
+!OOStack methodsFor: 'status' stamp: 'asd 4/Sep/2026, 5:22:14 pm (UTC)'!
 !methodProperties: {}!
 isEmpty
 
-	^last isNil.! !
+	^stack isEmpty.! !
+
+!OOStack methodsFor: 'status' stamp: 'asd 4/Sep/2026, 6:10:13 pm (UTC)'!
+!methodProperties: {}!
+size
+
+	^size .! !
+
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -36,12 +70,129 @@ stackEmptyErrorDescription
 	^ 'stack is empty!!!!!!'! !
 
 
-!classDefinition: #SentenceFinderByPrefix category: #'Stack-Exercise'!
-Object subclass: #SentenceFinderByPrefix
+!classDefinition: #StackElement category: #'Stack-Exercise'!
+OOStack subclass: #StackElement
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
+
+
+!classDefinition: #EmptyStack category: #'Stack-Exercise'!
+StackElement subclass: #EmptyStack
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Stack-Exercise'!
+
+!EmptyStack methodsFor: 'status' stamp: 'asd 4/Sep/2026, 5:43:16 pm (UTC)'!
+!methodProperties: {}!
+isEmpty
+
+	^true.! !
+
+
+!EmptyStack methodsFor: 'accessing' stamp: 'asd 4/Sep/2026, 6:51:24 pm (UTC)'!
+!methodProperties: {}!
+element
+
+	^self error: self class stackEmptyErrorDescription.! !
+
+!EmptyStack methodsFor: 'accessing' stamp: 'asd 4/Sep/2026, 6:51:37 pm (UTC)'!
+!methodProperties: {}!
+nextStackedElement
+
+	^self error: self class stackEmptyErrorDescription.! !
+
+
+!EmptyStack methodsFor: 'initialize' stamp: 'asd 4/Sep/2026, 5:59:25 pm (UTC)'!
+!methodProperties: {}!
+initialize ! !
+
+
+!classDefinition: #StackedElement category: #'Stack-Exercise'!
+StackElement subclass: #StackedElement
+	instanceVariableNames: 'anElement nextStackedElement'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Stack-Exercise'!
+
+!StackedElement methodsFor: 'status' stamp: 'asd 4/Sep/2026, 5:43:45 pm (UTC)'!
+!methodProperties: {}!
+isEmpty
+
+	^false.! !
+
+
+!StackedElement methodsFor: 'accessing' stamp: 'asd 4/Sep/2026, 5:46:44 pm (UTC)'!
+!methodProperties: {}!
+element
+
+	^anElement.! !
+
+!StackedElement methodsFor: 'accessing' stamp: 'asd 4/Sep/2026, 5:53:04 pm (UTC)'!
+!methodProperties: {}!
+element: newElement
+
+	anElement := newElement.! !
+
+!StackedElement methodsFor: 'accessing' stamp: 'asd 4/Sep/2026, 5:48:33 pm (UTC)'!
+!methodProperties: {}!
+nextStakedElement
+
+	^nextStackedElement.! !
+
+!StackedElement methodsFor: 'accessing' stamp: 'asd 4/Sep/2026, 5:48:00 pm (UTC)'!
+!methodProperties: {}!
+nextStakedElement: anStackedElement
+
+	nextStackedElement := anStackedElement.! !
+
+!StackedElement methodsFor: 'accessing' stamp: 'asd 4/Sep/2026, 6:05:05 pm (UTC)'!
+!methodProperties: {}!
+top
+
+	^stack element.! !
+
+
+!classDefinition: #SentenceFinderByPrefix category: #'Stack-Exercise'!
+Object subclass: #SentenceFinderByPrefix
+	instanceVariableNames: 'prefix lista'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Stack-Exercise'!
+
+!SentenceFinderByPrefix methodsFor: 'as yet unclassified' stamp: 'asd 5/Sep/2026, 1:32:48 am (UTC)'!
+!methodProperties: {}!
+find: aPrefix on: anStack
+	
+	|aList|
+	
+	aList := OrderedCollection new.
+	
+	[anStack isEmpty ] whileFalse: [aList add: anStack pop].
+	[aList isEmpty ] whileFalse: [anStack push: aList removeLast ].
+	
+	^aPrefix.
+
+	! !
+
+!SentenceFinderByPrefix methodsFor: 'as yet unclassified' stamp: 'asd 5/Sep/2026, 1:43:22 am (UTC)'!
+!methodProperties: {}!
+fiter: aPrefix on: aList
+	
+	|resultedList index|
+	
+	resultedList := OrderedCollection new.
+	index := 0.
+	
+	[index < aList size] whileFalse: [
+		resultedList add: (aList at: index) .
+		index := index +1.
+	].
+	
+	^aPrefix.
+! !
 
 
 !classDefinition: #OOStackTest category: #'Stack-Exercise'!
