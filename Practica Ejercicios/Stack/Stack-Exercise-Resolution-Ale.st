@@ -56,7 +56,6 @@ size
 
 	^size .! !
 
-
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'OOStack class' category: #'Stack-Exercise'!
@@ -162,36 +161,77 @@ Object subclass: #SentenceFinderByPrefix
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
 
-!SentenceFinderByPrefix methodsFor: 'as yet unclassified' stamp: 'asd 5/Sep/2026, 1:32:48 am (UTC)'!
+!SentenceFinderByPrefix methodsFor: 'as yet unclassified' stamp: 'asd 6/Sep/2026, 1:39:22 am (UTC)'!
 !methodProperties: {}!
-find: aPrefix on: anStack
-	
+convert: anStack to: aList
+
+	^[anStack isEmpty ] whileFalse: [aList add: anStack pop].! !
+
+!SentenceFinderByPrefix methodsFor: 'as yet unclassified' stamp: 'asd 6/Sep/2026, 1:47:21 am (UTC)'!
+!methodProperties: {}!
+extract: anStack From: aList
+
+	[aList isEmpty ] whileFalse: [anStack push: aList removeLast ].! !
+
+!SentenceFinderByPrefix methodsFor: 'as yet unclassified' stamp: 'asd 6/Sep/2026, 1:43:49 am (UTC)'!
+!methodProperties: {}!
+extractListFrom: anStack
+
 	|aList|
 	
 	aList := OrderedCollection new.
-	
 	[anStack isEmpty ] whileFalse: [aList add: anStack pop].
+	
+	^aList.! !
+
+!SentenceFinderByPrefix methodsFor: 'as yet unclassified' stamp: 'asd 6/Sep/2026, 1:46:01 am (UTC)'!
+!methodProperties: {}!
+extractStackFrom: aList
+
+	|anStack|
+	
+	anStack := OrderedCollection new.
 	[aList isEmpty ] whileFalse: [anStack push: aList removeLast ].
 	
-	^aPrefix.
+	^aList.! !
+
+!SentenceFinderByPrefix methodsFor: 'as yet unclassified' stamp: 'asd 6/Sep/2026, 1:49:26 am (UTC)'!
+!methodProperties: {}!
+find: aPrefix on: anStack
+	
+	|aList aListToReturn|
+	
+	aList := self extractListFrom: anStack.
+	
+	aListToReturn := self fiter: aPrefix on: aList.
+	
+	self extract: anStack From: aList.
+	
+	^aListToReturn.
 
 	! !
 
-!SentenceFinderByPrefix methodsFor: 'as yet unclassified' stamp: 'asd 5/Sep/2026, 1:43:22 am (UTC)'!
+!SentenceFinderByPrefix methodsFor: 'as yet unclassified' stamp: 'asd 6/Sep/2026, 1:58:09 am (UTC)'!
 !methodProperties: {}!
 fiter: aPrefix on: aList
 	
-	|resultedList index|
+	|resultedList index aBoolean|
 	
 	resultedList := OrderedCollection new.
-	index := 0.
+	index := 1.
 	
-	[index < aList size] whileFalse: [
-		resultedList add: (aList at: index) .
+	[index <= aList size] whileTrue: [
+		|aString|
+		
+		aString := aList at: index.
+		aBoolean := (aString is: aPrefix substringAt: 1).
+		aBoolean ifTrue: [
+			resultedList add: (aList at: index) .
+		].
 		index := index +1.
 	].
 	
-	^aPrefix.
+	^resultedList.
 ! !
 
 
