@@ -195,7 +195,7 @@ extractStackFrom: aList
 	
 	^aList.! !
 
-!SentenceFinderByPrefix methodsFor: 'as yet unclassified' stamp: 'asd 6/Sep/2026, 1:49:26 am (UTC)'!
+!SentenceFinderByPrefix methodsFor: 'as yet unclassified' stamp: 'asd 7/Sep/2026, 7:16:53 am (UTC)'!
 !methodProperties: {}!
 find: aPrefix on: anStack
 	
@@ -203,7 +203,7 @@ find: aPrefix on: anStack
 	
 	aList := self extractListFrom: anStack.
 	
-	aListToReturn := self fiter: aPrefix on: aList.
+	aListToReturn := self select: aPrefix from: aList.
 	
 	self extract: anStack From: aList.
 	
@@ -211,9 +211,16 @@ find: aPrefix on: anStack
 
 	! !
 
-!SentenceFinderByPrefix methodsFor: 'as yet unclassified' stamp: 'asd 6/Sep/2026, 1:58:09 am (UTC)'!
+!SentenceFinderByPrefix methodsFor: 'as yet unclassified' stamp: 'asd 7/Sep/2026, 7:42:02 am (UTC)'!
 !methodProperties: {}!
-fiter: aPrefix on: aList
+select: aPrefix from: aList
+	
+	^aList select: [
+		:anStringElement |
+		anStringElement is: aPrefix substringAt: 1
+	]
+	
+	" '**Dejo mi viejo codigo con propositos de aprendizaje**'
 	
 	|resultedList index aBoolean|
 	
@@ -231,7 +238,7 @@ fiter: aPrefix on: aList
 		index := index +1.
 	].
 	
-	^resultedList.
+	^resultedList."
 ! !
 
 
