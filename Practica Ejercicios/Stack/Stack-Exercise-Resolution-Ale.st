@@ -397,3 +397,74 @@ TestCase subclass: #SentenceFinderByPrefixTest
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
+
+!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'asd 8/Sep/2026, 9:04:16 pm (UTC)'!
+!methodProperties: {}!
+test01ShouldReturnAnEmptyListWhenIsANewStack
+
+	| stack selectorByPrefix|
+	
+	stack := OOStack new.
+	selectorByPrefix := SentenceFinderByPrefix new.
+	
+	self assert: stack isEmpty.
+	self assert: (selectorByPrefix find: 'whatever'  on: stack ) isEmpty.! !
+
+!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'asd 8/Sep/2026, 9:07:53 pm (UTC)'!
+!methodProperties: {}!
+test02ShouldReturnAnEmptyListWhenIsAnUnstakedWordWithPrefixMatch
+
+	| stack selectorByPrefix|
+	
+	stack := OOStack new.
+	stack push: 'anStakedWord'.
+	selectorByPrefix := SentenceFinderByPrefix new.
+	
+	self deny: stack isEmpty.
+	self assert: (selectorByPrefix find: 'whatever'  on: stack ) isEmpty.! !
+
+!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'asd 9/Sep/2026, 6:06:58 am (UTC)'!
+!methodProperties: {}!
+test03ShouldReturnAnNotEmptyListWhenIsAnStakedWordWithPrefixMatchAndTheElementIsRight
+
+	| stack selectorByPrefix resultList testList|
+	
+	stack := OOStack new.
+	stack push: 'anStakedWord'.
+	selectorByPrefix := SentenceFinderByPrefix new.
+	
+	resultList := selectorByPrefix find: 'anSt'  on: stack.
+	testList := OrderedCollection new. 
+	testList add: 'anStakedWord'.
+	
+	self deny: stack isEmpty.
+	self deny: resultList isEmpty.
+	self assert: resultList equals: testList.! !
+
+!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'asd 9/Sep/2026, 6:20:11 am (UTC)'!
+!methodProperties: {}!
+test04ShouldReturnAListWithTheElementsPrefixedsAndNothingMore
+
+	| stack selectorByPrefix resultList testList|
+	
+	stack := OOStack new.
+	stack push: 'anStakedWord'.
+	selectorByPrefix := SentenceFinderByPrefix new.
+	
+	stack push: 'asd' .
+	stack push: 'alejandro'  .
+	stack push: 'alejo'  .
+	stack push: 'sape'   .
+	stack push: 'alex' .
+	stack push: 'yeahh' .
+	
+	resultList := selectorByPrefix find: 'ale'  on: stack.
+	testList := OrderedCollection new. 
+	testList add: 'alex'.
+	testList add: 'alejo'.
+	testList add: 'alejandro'.
+	
+	self assert: resultList size equals: 3.
+	self assert: resultList equals: testList.
+	
+	! !
