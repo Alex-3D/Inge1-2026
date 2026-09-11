@@ -1,31 +1,31 @@
 !classDefinition: #OOStack category: #'Stack-Exercise'!
 Object subclass: #OOStack
-	instanceVariableNames: 'size stack'
+	instanceVariableNames: 'size lastStakedElement'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
 
-!OOStack methodsFor: 'initialize' stamp: 'asd 4/Sep/2026, 6:08:12 pm (UTC)'!
+!OOStack methodsFor: 'initialize' stamp: 'asd 9/Sep/2026, 6:53:56 am (UTC)'!
 !methodProperties: {}!
 initialize
 
-	stack := EmptyStack new.
+	lastStakedElement := EmptyStack new.
 	size := 0.! !
 
 
-!OOStack methodsFor: 'accessing' stamp: 'asd 4/Sep/2026, 6:21:32 pm (UTC)'!
+!OOStack methodsFor: 'accessing' stamp: 'asd 9/Sep/2026, 6:53:56 am (UTC)'!
 !methodProperties: {}!
 pop
 
 	|anObjectToReturn|
 	
-	anObjectToReturn := stack element.
-	stack := stack nextStakedElement.
+	anObjectToReturn := lastStakedElement element.
+	lastStakedElement := lastStakedElement nextStakedElement.
 	size := size -1.
 	
 	^anObjectToReturn .! !
 
-!OOStack methodsFor: 'accessing' stamp: 'asd 4/Sep/2026, 6:08:55 pm (UTC)'!
+!OOStack methodsFor: 'accessing' stamp: 'asd 9/Sep/2026, 6:53:56 am (UTC)'!
 !methodProperties: {}!
 push: anObject
 	
@@ -33,22 +33,22 @@ push: anObject
 	
 	stackedElementToAdd := StackedElement new.
 	stackedElementToAdd  element: anObject.
-	stackedElementToAdd nextStakedElement: stack.
-	stack := stackedElementToAdd.
+	stackedElementToAdd nextStakedElement: lastStakedElement.
+	lastStakedElement := stackedElementToAdd.
 	size := size + 1.! !
 
-!OOStack methodsFor: 'accessing' stamp: 'asd 4/Sep/2026, 6:05:44 pm (UTC)'!
+!OOStack methodsFor: 'accessing' stamp: 'asd 9/Sep/2026, 6:53:56 am (UTC)'!
 !methodProperties: {}!
 top
 
-	^stack element.! !
+	^lastStakedElement element.! !
 
 
-!OOStack methodsFor: 'status' stamp: 'asd 4/Sep/2026, 5:22:14 pm (UTC)'!
+!OOStack methodsFor: 'status' stamp: 'asd 9/Sep/2026, 6:53:56 am (UTC)'!
 !methodProperties: {}!
 isEmpty
 
-	^stack isEmpty.! !
+	^lastStakedElement isEmpty.! !
 
 !OOStack methodsFor: 'status' stamp: 'asd 4/Sep/2026, 6:10:13 pm (UTC)'!
 !methodProperties: {}!
@@ -147,11 +147,11 @@ nextStakedElement: anStackedElement
 
 	nextStackedElement := anStackedElement.! !
 
-!StackedElement methodsFor: 'accessing' stamp: 'asd 4/Sep/2026, 6:05:05 pm (UTC)'!
+!StackedElement methodsFor: 'accessing' stamp: 'asd 9/Sep/2026, 6:53:56 am (UTC)'!
 !methodProperties: {}!
 top
 
-	^stack element.! !
+	^lastStakedElement element.! !
 
 
 !classDefinition: #SentenceFinderByPrefix category: #'Stack-Exercise'!
