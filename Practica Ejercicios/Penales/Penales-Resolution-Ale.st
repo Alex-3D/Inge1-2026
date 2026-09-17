@@ -1,9 +1,21 @@
 !classDefinition: #Jugador category: #Penales!
 Object subclass: #Jugador
-	instanceVariableNames: 'fuerzaBase'
+	instanceVariableNames: 'fuerzaBase direccionUltimaJugada'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Penales'!
+
+!Jugador methodsFor: 'access' stamp: 'asd 16/Sep/2026, 3:57:10 am (UTC)'!
+!methodProperties: {}!
+direccionUltimaJugada
+
+	^direccionUltimaJugada.! !
+
+!Jugador methodsFor: 'access' stamp: 'asd 16/Sep/2026, 3:57:31 am (UTC)'!
+!methodProperties: {}!
+direccionUltimaJugada: unaCoordenada
+
+	direccionUltimaJugada := unaCoordenada.! !
 
 !Jugador methodsFor: 'access' stamp: 'asd 16/Sep/2026, 12:30:23 am (UTC)'!
 !methodProperties: {}!
@@ -11,6 +23,12 @@ fuerzaBase
 
 	^fuerzaBase.! !
 
+
+!Jugador methodsFor: 'initialize' stamp: 'asd 16/Sep/2026, 4:07:28 am (UTC)'!
+!methodProperties: {}!
+initialize
+
+	direccionUltimaJugada := [^self error: self class direccionUltimaJugadaError.]! !
 
 !Jugador methodsFor: 'initialize' stamp: 'asd 16/Sep/2026, 12:30:23 am (UTC)'!
 !methodProperties: {}!
@@ -23,6 +41,13 @@ initializeWith: unaFuerza
 !classDefinition: 'Jugador class' category: #Penales!
 Jugador class
 	instanceVariableNames: ''!
+
+!Jugador class methodsFor: 'message errors' stamp: 'asd 16/Sep/2026, 4:00:24 am (UTC)'!
+!methodProperties: {}!
+direccionUltimaJugadaError
+
+	^'Aun no hubo jugada!!'! !
+
 
 !Jugador class methodsFor: 'instance creation' stamp: 'asd 16/Sep/2026, 12:37:35 am (UTC)'!
 !methodProperties: {}!
@@ -39,11 +64,30 @@ esperaPorTiroYSeAdelantaSuFuerzaBaseEs: unaFuerza
 
 !classDefinition: #Arquero category: #Penales!
 Jugador subclass: #Arquero
-	instanceVariableNames: ''
+	instanceVariableNames: 'tipoDeAtajada'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Penales'!
 
+!Arquero methodsFor: 'initialize' stamp: 'asd 16/Sep/2026, 3:39:41 am (UTC)'!
+!methodProperties: {}!
+initializeWith: unaFuerza and: unTipoDeAtajada
+
+	self initializeWith: unaFuerza.
+	tipoDeAtajada := unTipoDeAtajada.! !
+
+
+!Arquero methodsFor: 'access' stamp: 'asd 17/Sep/2026, 9:43:40 pm (UTC)'!
+!methodProperties: {}!
+atajo: coordenadaTiro y: unaPelota 
+
+	^tipoDeAtajada seIntercepto: coordenadaTiro y: direccionUltimaJugada y: unaPelota.! !
+
+!Arquero methodsFor: 'access' stamp: 'asd 17/Sep/2026, 7:11:12 am (UTC)'!
+!methodProperties: {}!
+fuerzaDeAtajada: unaPelota
+
+	^tipoDeAtajada fuerzaDeJugada: unaPelota y: fuerzaBase.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -51,11 +95,17 @@ Jugador subclass: #Arquero
 Arquero class
 	instanceVariableNames: ''!
 
-!Arquero class methodsFor: 'instance creation' stamp: 'asd 15/Sep/2026, 11:37:09 pm (UTC)'!
+!Arquero class methodsFor: 'instance creation' stamp: 'asd 17/Sep/2026, 12:50:24 am (UTC)'!
+!methodProperties: {}!
+eligeDireccionAntesDeTiroSuFuerzaBaseEs: unaFuerza
+
+	^self new initializeWith: unaFuerza and: TipoDeJugada atajadaSeTiraAntes.! !
+
+!Arquero class methodsFor: 'instance creation' stamp: 'asd 17/Sep/2026, 12:50:24 am (UTC)'!
 !methodProperties: {}!
 esperaPorTiroYSeAdelantaSuFuerzaBaseEs: unaFuerza
 
-	^self new initializeWith: unaFuerza.! !
+	^self new initializeWith: unaFuerza and: TipoDeJugada atajadaSeTiraDespues.! !
 
 
 !classDefinition: #Delantero category: #Penales!
@@ -73,11 +123,17 @@ initializeWith: unaFuerza and: unTipoDeTiro
 	tipoDeTiro := unTipoDeTiro.! !
 
 
-!Delantero methodsFor: 'access' stamp: 'asd 16/Sep/2026, 12:51:26 am (UTC)'!
+!Delantero methodsFor: 'access' stamp: 'asd 17/Sep/2026, 10:20:59 pm (UTC)'!
 !methodProperties: {}!
-fuerzaDelTiro
+direccionResultante
 
-	^fuerzaBase * tipoDeTiro fuerzaDelTiro.! !
+	^tipoDeTiro coordenadaJugada: direccionUltimaJugada.! !
+
+!Delantero methodsFor: 'access' stamp: 'asd 17/Sep/2026, 7:11:27 am (UTC)'!
+!methodProperties: {}!
+fuerzaDelTiro: unaPelota
+
+	^tipoDeTiro fuerzaDeJugada: unaPelota y: fuerzaBase.! !
 
 !Delantero methodsFor: 'access' stamp: 'asd 16/Sep/2026, 12:48:50 am (UTC)'!
 !methodProperties: {}!
@@ -91,19 +147,66 @@ tipoDeTiro
 Delantero class
 	instanceVariableNames: ''!
 
-!Delantero class methodsFor: 'instance creation' stamp: 'asd 16/Sep/2026, 12:49:35 am (UTC)'!
+!Delantero class methodsFor: 'instance creation' stamp: 'asd 17/Sep/2026, 12:50:24 am (UTC)'!
 !methodProperties: {}!
 decideTirarAColocarSuFuerzaBaseEs: unaFuerza
 
-	^self new initializeWith: unaFuerza and: Tiro tiroAColocar.! !
+	^self new initializeWith: unaFuerza and: TipoDeJugada tiroAColocar.! !
+
+!Delantero class methodsFor: 'instance creation' stamp: 'asd 17/Sep/2026, 9:56:29 pm (UTC)'!
+!methodProperties: {}!
+decideTirarAMatarSuFuerzaBaseEs: unaFuerza
+
+	^self new initializeWith: unaFuerza and: TipoDeJugada tiroAMatar.! !
 
 
 !classDefinition: #Pelota category: #Penales!
 Object subclass: #Pelota
-	instanceVariableNames: 'porcentajePenalizacion'
+	instanceVariableNames: 'multiplicadorFuerzaDelantero penalizacionFuerzaDelantero multiplicadorFuerzaArquero visiblieAnteElVar'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Penales'!
+
+!Pelota methodsFor: 'initialize' stamp: 'asd 17/Sep/2026, 5:38:19 am (UTC)'!
+!methodProperties: {}!
+initialize
+
+	multiplicadorFuerzaDelantero := 1.
+	visiblieAnteElVar := true.! !
+
+!Pelota methodsFor: 'initialize' stamp: 'asd 17/Sep/2026, 9:12:31 pm (UTC)'!
+!methodProperties: {}!
+initializeWith: unMultiplicadorDelantero and: unaPenalizacionDelantero and: unMultiplicadorArquero and: visibilidad
+
+	multiplicadorFuerzaDelantero := unMultiplicadorDelantero.
+	penalizacionFuerzaDelantero := unaPenalizacionDelantero.
+	multiplicadorFuerzaArquero := unMultiplicadorArquero.
+	visiblieAnteElVar := visibilidad.! !
+
+
+!Pelota methodsFor: 'access' stamp: 'asd 17/Sep/2026, 6:19:05 am (UTC)'!
+!methodProperties: {}!
+fuerzaArquero
+
+	^multiplicadorFuerzaArquero.! !
+
+!Pelota methodsFor: 'access' stamp: 'asd 17/Sep/2026, 6:19:50 am (UTC)'!
+!methodProperties: {}!
+fuerzaDelantero
+
+	^multiplicadorFuerzaDelantero.! !
+
+!Pelota methodsFor: 'access' stamp: 'asd 17/Sep/2026, 9:06:20 pm (UTC)'!
+!methodProperties: {}!
+penalizacionDelantero
+
+	^penalizacionFuerzaDelantero.! !
+
+!Pelota methodsFor: 'access' stamp: 'asd 17/Sep/2026, 3:01:56 am (UTC)'!
+!methodProperties: {}!
+visiblieAnteElVar
+
+	^visiblieAnteElVar! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -111,16 +214,22 @@ Object subclass: #Pelota
 Pelota class
 	instanceVariableNames: ''!
 
-!Pelota class methodsFor: 'prototipes' stamp: 'asd 15/Sep/2026, 7:16:21 pm (UTC)'!
+!Pelota class methodsFor: 'prototipes' stamp: 'asd 17/Sep/2026, 10:39:35 pm (UTC)'!
 !methodProperties: {}!
 jabulaniSudafricanaRapida
 
-	^self new.! !
+	^self new initializeWith: 0.2 and: 0 and: 0 and: false.! !
+
+!Pelota class methodsFor: 'prototipes' stamp: 'asd 17/Sep/2026, 10:36:06 pm (UTC)'!
+!methodProperties: {}!
+playeraLentaCostaAzul
+
+	^self new initializeWith: 0 and: 0.2 and: 0.5 and: true.! !
 
 
 !classDefinition: #Penales category: #Penales!
 Object subclass: #Penales
-	instanceVariableNames: 'delantero arquero puntajeDelantero puntajeArquero'
+	instanceVariableNames: 'delantero arquero puntajeDelantero puntajeArquero unaPelota actualVar'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Penales'!
@@ -150,7 +259,7 @@ puntajeDeDelantero
 	^puntajeDelantero.! !
 
 
-!Penales methodsFor: 'play' stamp: 'asd 16/Sep/2026, 12:52:06 am (UTC)'!
+!Penales methodsFor: 'play' stamp: 'asd 17/Sep/2026, 10:34:03 pm (UTC)'!
 !methodProperties: {}!
 arbitroPitaConPelota: pelota delanteroRemataAlArcoConDireccion: coordenadaDelantero arqueroSeLanzaEnDirección: coordenadaArquero
 
@@ -159,7 +268,11 @@ arbitroPitaConPelota: pelota delanteroRemataAlArcoConDireccion: coordenadaDelant
 	(coordenadaDelantero between: 0@0 and: 2@2)ifFalse: [^self error: self class direccionTiroFueraDeRango.].
 	(coordenadaArquero between: 0@0 and: 2@2)ifFalse: [^self error: self class direccionArqueroFueraDeRango.].
 	
-	condicionDeGol := (delantero fuerzaDelTiro > arquero fuerzaBase) or: (coordenadaDelantero = coordenadaArquero) not.
+	delantero direccionUltimaJugada: coordenadaDelantero.
+	arquero direccionUltimaJugada: coordenadaArquero.
+	unaPelota := pelota.
+	actualVar := Var new initializeWith: delantero and: arquero and: pelota.
+	condicionDeGol := ((delantero fuerzaDelTiro: pelota) > (arquero fuerzaDeAtajada: pelota)) or: (arquero atajo: delantero direccionResultante y: pelota) not.
 	
 	(condicionDeGol)ifTrue: [self delanteroMeteGol] ifFalse: [self arqueroAtaja].
 	
@@ -170,17 +283,23 @@ arbitroPitaConPelota: pelota delanteroRemataAlArcoConDireccion: coordenadaDelant
 	
 	! !
 
-!Penales methodsFor: 'play' stamp: 'asd 15/Sep/2026, 11:41:05 pm (UTC)'!
+!Penales methodsFor: 'play' stamp: 'asd 17/Sep/2026, 6:05:27 am (UTC)'!
 !methodProperties: {}!
 varDireccionRemateResultante
 
-	^2@2.! !
+	^actualVar direccionRemateResultante.! !
 
-!Penales methodsFor: 'play' stamp: 'asd 16/Sep/2026, 12:54:06 am (UTC)'!
+!Penales methodsFor: 'play' stamp: 'asd 17/Sep/2026, 6:05:46 am (UTC)'!
+!methodProperties: {}!
+varFuerzaResultanteDeAtajada
+
+	^actualVar fuerzaResultanteDeAtajada.! !
+
+!Penales methodsFor: 'play' stamp: 'asd 17/Sep/2026, 6:06:08 am (UTC)'!
 !methodProperties: {}!
 varFuerzaResultanteDeTiro
 
-	^delantero fuerzaDelTiro.! !
+	^actualVar fuerzaResultanteDeTiro.! !
 
 
 !Penales methodsFor: 'initialize' stamp: 'asd 15/Sep/2026, 11:49:34 pm (UTC)'!
@@ -223,27 +342,27 @@ conDelantero: delantero yArquero: arquero
 	^self new initializeWith: delantero and: arquero.! !
 
 
-!classDefinition: #Tiro category: #Penales!
-Object subclass: #Tiro
+!classDefinition: #TipoDeJugada category: #Penales!
+Object subclass: #TipoDeJugada
 	instanceVariableNames: 'multiplicadorDeFuerza'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Penales'!
 
-!Tiro methodsFor: 'access' stamp: 'asd 16/Sep/2026, 12:41:34 am (UTC)'!
+!TipoDeJugada methodsFor: 'access' stamp: 'asd 17/Sep/2026, 6:32:21 am (UTC)'!
 !methodProperties: {}!
-fuerzaDelTiro
+fuerzaDeJugada: unaPelota y: unaFuerza 
 
-	^multiplicadorDeFuerza.! !
+	self subclassResponsibility! !
 
 
-!Tiro methodsFor: 'initialize' stamp: 'asd 16/Sep/2026, 12:42:56 am (UTC)'!
+!TipoDeJugada methodsFor: 'initialize' stamp: 'asd 16/Sep/2026, 12:42:56 am (UTC)'!
 !methodProperties: {}!
 initialize
 
 	multiplicadorDeFuerza := 0.! !
 
-!Tiro methodsFor: 'initialize' stamp: 'asd 16/Sep/2026, 12:42:36 am (UTC)'!
+!TipoDeJugada methodsFor: 'initialize' stamp: 'asd 16/Sep/2026, 12:42:36 am (UTC)'!
 !methodProperties: {}!
 initializeWith: unMultiplo
 
@@ -251,21 +370,225 @@ initializeWith: unMultiplo
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Tiro class' category: #Penales!
-Tiro class
+!classDefinition: 'TipoDeJugada class' category: #Penales!
+TipoDeJugada class
 	instanceVariableNames: ''!
 
-!Tiro class methodsFor: 'prototype' stamp: 'asd 16/Sep/2026, 12:44:51 am (UTC)'!
+!TipoDeJugada class methodsFor: 'prototype' stamp: 'asd 17/Sep/2026, 1:06:55 am (UTC)'!
+!methodProperties: {}!
+atajadaSeTiraAntes
+	
+	^AtajadaSeTiraAntes new.! !
+
+!TipoDeJugada class methodsFor: 'prototype' stamp: 'asd 17/Sep/2026, 1:07:27 am (UTC)'!
+!methodProperties: {}!
+atajadaSeTiraDespues
+	
+	^AtajadaSeTiraDespues new.! !
+
+!TipoDeJugada class methodsFor: 'prototype' stamp: 'asd 17/Sep/2026, 7:18:52 am (UTC)'!
 !methodProperties: {}!
 tiroAColocar
 	
-	^self new initializeWith: 0.5 .! !
+	^TiroAColocar new.! !
 
-!Tiro class methodsFor: 'prototype' stamp: 'asd 16/Sep/2026, 12:44:20 am (UTC)'!
+!TipoDeJugada class methodsFor: 'prototype' stamp: 'asd 17/Sep/2026, 7:18:57 am (UTC)'!
 !methodProperties: {}!
 tiroAMatar
 	
-	^self new initializeWith: 1.! !
+	^TiroAMatar new.! !
+
+
+!classDefinition: #Atajada category: #Penales!
+TipoDeJugada subclass: #Atajada
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Penales'!
+
+!Atajada methodsFor: 'access' stamp: 'asd 17/Sep/2026, 6:32:21 am (UTC)'!
+!methodProperties: {}!
+fuerzaDeJugada: unaPelota y: unaFuerza 
+
+	self subclassResponsibility! !
+
+!Atajada methodsFor: 'access' stamp: 'asd 17/Sep/2026, 9:41:06 pm (UTC)'!
+!methodProperties: {}!
+seIntercepto: coordenadaTiro y: coordenadaArquero y: unaPelota  
+
+	self subclassResponsibility! !
+
+
+!classDefinition: #AtajadaSeTiraAntes category: #Penales!
+Atajada subclass: #AtajadaSeTiraAntes
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Penales'!
+
+!AtajadaSeTiraAntes methodsFor: 'access' stamp: 'asd 17/Sep/2026, 6:47:49 am (UTC)'!
+!methodProperties: {}!
+fuerzaDeJugada: unaPelota y: unaFuerza 
+
+	^(unaFuerza * multiplicadorDeFuerza) + (unaFuerza * unaPelota fuerzaArquero).! !
+
+!AtajadaSeTiraAntes methodsFor: 'access' stamp: 'asd 17/Sep/2026, 9:41:06 pm (UTC)'!
+!methodProperties: {}!
+seIntercepto: coordenadaTiro y: coordenadaArquero y: unaPelota  
+
+	^(coordenadaArquero = coordenadaTiro).! !
+
+
+!AtajadaSeTiraAntes methodsFor: 'initialize' stamp: 'asd 17/Sep/2026, 1:05:18 am (UTC)'!
+!methodProperties: {}!
+initialize
+
+	multiplicadorDeFuerza :=1.5 .! !
+
+
+!classDefinition: #AtajadaSeTiraDespues category: #Penales!
+Atajada subclass: #AtajadaSeTiraDespues
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Penales'!
+
+!AtajadaSeTiraDespues methodsFor: 'access' stamp: 'asd 17/Sep/2026, 6:35:40 am (UTC)'!
+!methodProperties: {}!
+fuerzaDeJugada: unaPelota y: unaFuerza 
+
+	^unaFuerza * multiplicadorDeFuerza.! !
+
+!AtajadaSeTiraDespues methodsFor: 'access' stamp: 'asd 17/Sep/2026, 9:49:26 pm (UTC)'!
+!methodProperties: {}!
+seIntercepto: coordenadaTiro y: coordenadaArquero y: unaPelota  
+
+	^(coordenadaArquero x = coordenadaTiro x) and: unaPelota visiblieAnteElVar not.! !
+
+
+!AtajadaSeTiraDespues methodsFor: 'initialize' stamp: 'asd 17/Sep/2026, 12:56:57 am (UTC)'!
+!methodProperties: {}!
+initialize
+
+	multiplicadorDeFuerza :=1.! !
+
+
+!classDefinition: #Tiro category: #Penales!
+TipoDeJugada subclass: #Tiro
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Penales'!
+
+!Tiro methodsFor: 'access' stamp: 'asd 17/Sep/2026, 6:44:03 am (UTC)'!
+!methodProperties: {}!
+fuerzaDeJugada: unaPelota y: unaFuerza 
+
+	self subclassResponsibility! !
+
+
+!classDefinition: #TiroAColocar category: #Penales!
+Tiro subclass: #TiroAColocar
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Penales'!
+
+!TiroAColocar methodsFor: 'access' stamp: 'asd 17/Sep/2026, 6:50:14 am (UTC)'!
+!methodProperties: {}!
+coordenadaJugada: coordenadaTiro
+
+	^coordenadaTiro.! !
+
+!TiroAColocar methodsFor: 'access' stamp: 'asd 17/Sep/2026, 9:55:31 pm (UTC)'!
+!methodProperties: {}!
+fuerzaDeJugada: unaPelota y: unaFuerza 
+
+	|fuerzaJugada|
+	
+	fuerzaJugada := unaFuerza * multiplicadorDeFuerza.
+	
+	^fuerzaJugada - (fuerzaJugada * unaPelota penalizacionDelantero).! !
+
+
+!TiroAColocar methodsFor: 'initialize' stamp: 'asd 17/Sep/2026, 6:50:25 am (UTC)'!
+!methodProperties: {}!
+initialize
+
+	multiplicadorDeFuerza := 0.5.! !
+
+
+!classDefinition: #TiroAMatar category: #Penales!
+Tiro subclass: #TiroAMatar
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Penales'!
+
+!TiroAMatar methodsFor: 'access' stamp: 'asd 17/Sep/2026, 10:31:56 pm (UTC)'!
+!methodProperties: {}!
+coordenadaJugada: coordenadaTiro
+
+	|coordenadaResultante coordenadasAngulos|
+	
+	coordenadasAngulos := {0@0. 0@2. 2@0. 2@2}.	
+	coordenadaResultante := (coordenadaTiro x @1).
+	
+	(coordenadasAngulos includes: coordenadaTiro) ifTrue: [^coordenadaResultante.] ifFalse: [^coordenadaTiro.].! !
+
+!TiroAMatar methodsFor: 'access' stamp: 'asd 17/Sep/2026, 9:32:12 pm (UTC)'!
+!methodProperties: {}!
+fuerzaDeJugada: unaPelota y: unaFuerza 
+
+	^(unaFuerza * multiplicadorDeFuerza) + (unaFuerza * unaPelota fuerzaDelantero).! !
+
+
+!TiroAMatar methodsFor: 'initialize' stamp: 'asd 17/Sep/2026, 6:45:10 am (UTC)'!
+!methodProperties: {}!
+initialize
+
+	multiplicadorDeFuerza := 1.! !
+
+
+!classDefinition: #Var category: #Penales!
+Object subclass: #Var
+	instanceVariableNames: 'delantero arquero pelota'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Penales'!
+
+!Var methodsFor: 'access' stamp: 'asd 17/Sep/2026, 9:21:02 pm (UTC)'!
+!methodProperties: {}!
+direccionAtajadaResultante
+
+	^arquero direccionUltimaJugada.! !
+
+!Var methodsFor: 'access' stamp: 'asd 17/Sep/2026, 10:22:00 pm (UTC)'!
+!methodProperties: {}!
+direccionRemateResultante
+
+	^delantero direccionResultante.! !
+
+!Var methodsFor: 'access' stamp: 'asd 17/Sep/2026, 6:41:51 am (UTC)'!
+!methodProperties: {}!
+fuerzaResultanteDeAtajada
+
+	^arquero fuerzaDeAtajada: pelota.! !
+
+!Var methodsFor: 'access' stamp: 'asd 17/Sep/2026, 7:14:26 am (UTC)'!
+!methodProperties: {}!
+fuerzaResultanteDeTiro
+
+	^delantero fuerzaDelTiro: pelota.! !
+
+
+!Var methodsFor: 'initialize' stamp: 'asd 17/Sep/2026, 6:00:22 am (UTC)'!
+!methodProperties: {}!
+initializeWith: unDelantero and: unArquero and: unaPelota
+
+	delantero := unDelantero .
+	arquero := unArquero .
+	pelota := unaPelota .! !
 
 
 !classDefinition: #PenalesTest category: #Penales!
