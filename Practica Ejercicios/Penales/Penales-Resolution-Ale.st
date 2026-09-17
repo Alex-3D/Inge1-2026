@@ -83,11 +83,11 @@ atajo: coordenadaTiro y: unaPelota
 
 	^tipoDeAtajada seIntercepto: coordenadaTiro y: direccionUltimaJugada y: unaPelota.! !
 
-!Arquero methodsFor: 'access' stamp: 'asd 17/Sep/2026, 7:11:12 am (UTC)'!
+!Arquero methodsFor: 'access' stamp: 'asd 17/Sep/2026, 11:16:46 pm (UTC)'!
 !methodProperties: {}!
-fuerzaDeAtajada: unaPelota
+fuerzaDeAtajada: unaPelota y: unTipoDeTiro 
 
-	^tipoDeAtajada fuerzaDeJugada: unaPelota y: fuerzaBase.! !
+	^tipoDeAtajada fuerzaDeJugada: unaPelota y: fuerzaBase y: unTipoDeTiro.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -259,7 +259,7 @@ puntajeDeDelantero
 	^puntajeDelantero.! !
 
 
-!Penales methodsFor: 'play' stamp: 'asd 17/Sep/2026, 10:34:03 pm (UTC)'!
+!Penales methodsFor: 'play' stamp: 'asd 17/Sep/2026, 11:12:58 pm (UTC)'!
 !methodProperties: {}!
 arbitroPitaConPelota: pelota delanteroRemataAlArcoConDireccion: coordenadaDelantero arqueroSeLanzaEnDirección: coordenadaArquero
 
@@ -272,7 +272,7 @@ arbitroPitaConPelota: pelota delanteroRemataAlArcoConDireccion: coordenadaDelant
 	arquero direccionUltimaJugada: coordenadaArquero.
 	unaPelota := pelota.
 	actualVar := Var new initializeWith: delantero and: arquero and: pelota.
-	condicionDeGol := ((delantero fuerzaDelTiro: pelota) > (arquero fuerzaDeAtajada: pelota)) or: (arquero atajo: delantero direccionResultante y: pelota) not.
+	condicionDeGol := ((delantero fuerzaDelTiro: pelota) > (arquero fuerzaDeAtajada: pelota y: delantero tipoDeTiro)) or: (arquero atajo: delantero direccionResultante y: pelota) not.
 	
 	(condicionDeGol)ifTrue: [self delanteroMeteGol] ifFalse: [self arqueroAtaja].
 	
@@ -406,9 +406,9 @@ TipoDeJugada subclass: #Atajada
 	poolDictionaries: ''
 	category: 'Penales'!
 
-!Atajada methodsFor: 'access' stamp: 'asd 17/Sep/2026, 6:32:21 am (UTC)'!
+!Atajada methodsFor: 'access' stamp: 'asd 17/Sep/2026, 11:16:36 pm (UTC)'!
 !methodProperties: {}!
-fuerzaDeJugada: unaPelota y: unaFuerza 
+fuerzaDeJugada: unaPelota y: unaFuerza y: unTipoDeTiro  
 
 	self subclassResponsibility! !
 
@@ -426,11 +426,11 @@ Atajada subclass: #AtajadaSeTiraAntes
 	poolDictionaries: ''
 	category: 'Penales'!
 
-!AtajadaSeTiraAntes methodsFor: 'access' stamp: 'asd 17/Sep/2026, 6:47:49 am (UTC)'!
+!AtajadaSeTiraAntes methodsFor: 'access' stamp: 'asd 17/Sep/2026, 11:33:43 pm (UTC)'!
 !methodProperties: {}!
-fuerzaDeJugada: unaPelota y: unaFuerza 
+fuerzaDeJugada: unaPelota y: unaFuerza y: unTipoDeTiro  
 
-	^(unaFuerza * multiplicadorDeFuerza) + (unaFuerza * unaPelota fuerzaArquero).! !
+	^(unaFuerza * multiplicadorDeFuerza - (unaFuerza * unTipoDeTiro penalizacionArquero)) + (unaFuerza * unaPelota fuerzaArquero).! !
 
 !AtajadaSeTiraAntes methodsFor: 'access' stamp: 'asd 17/Sep/2026, 9:41:06 pm (UTC)'!
 !methodProperties: {}!
@@ -453,9 +453,9 @@ Atajada subclass: #AtajadaSeTiraDespues
 	poolDictionaries: ''
 	category: 'Penales'!
 
-!AtajadaSeTiraDespues methodsFor: 'access' stamp: 'asd 17/Sep/2026, 6:35:40 am (UTC)'!
+!AtajadaSeTiraDespues methodsFor: 'access' stamp: 'asd 17/Sep/2026, 11:16:36 pm (UTC)'!
 !methodProperties: {}!
-fuerzaDeJugada: unaPelota y: unaFuerza 
+fuerzaDeJugada: unaPelota y: unaFuerza y: unTipoDeTiro  
 
 	^unaFuerza * multiplicadorDeFuerza.! !
 
@@ -510,6 +510,12 @@ fuerzaDeJugada: unaPelota y: unaFuerza
 	
 	^fuerzaJugada - (fuerzaJugada * unaPelota penalizacionDelantero).! !
 
+!TiroAColocar methodsFor: 'access' stamp: 'asd 17/Sep/2026, 11:34:01 pm (UTC)'!
+!methodProperties: {}!
+penalizacionArquero
+
+	^0.! !
+
 
 !TiroAColocar methodsFor: 'initialize' stamp: 'asd 17/Sep/2026, 6:50:25 am (UTC)'!
 !methodProperties: {}!
@@ -542,6 +548,12 @@ fuerzaDeJugada: unaPelota y: unaFuerza
 
 	^(unaFuerza * multiplicadorDeFuerza) + (unaFuerza * unaPelota fuerzaDelantero).! !
 
+!TiroAMatar methodsFor: 'access' stamp: 'asd 17/Sep/2026, 11:33:55 pm (UTC)'!
+!methodProperties: {}!
+penalizacionArquero
+
+	^0.5.! !
+
 
 !TiroAMatar methodsFor: 'initialize' stamp: 'asd 17/Sep/2026, 6:45:10 am (UTC)'!
 !methodProperties: {}!
@@ -569,11 +581,11 @@ direccionRemateResultante
 
 	^delantero direccionResultante.! !
 
-!Var methodsFor: 'access' stamp: 'asd 17/Sep/2026, 6:41:51 am (UTC)'!
+!Var methodsFor: 'access' stamp: 'asd 17/Sep/2026, 11:12:58 pm (UTC)'!
 !methodProperties: {}!
 fuerzaResultanteDeAtajada
 
-	^arquero fuerzaDeAtajada: pelota.! !
+	^arquero fuerzaDeAtajada: pelota y: delantero tipoDeTiro.! !
 
 !Var methodsFor: 'access' stamp: 'asd 17/Sep/2026, 7:14:26 am (UTC)'!
 !methodProperties: {}!
