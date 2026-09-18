@@ -229,7 +229,7 @@ playeraLentaCostaAzul
 
 !classDefinition: #Penales category: #Penales!
 Object subclass: #Penales
-	instanceVariableNames: 'delantero arquero puntajeDelantero puntajeArquero unaPelota actualVar'
+	instanceVariableNames: 'delantero arquero puntajeDelantero puntajeArquero unaPelota varActual'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Penales'!
@@ -259,22 +259,17 @@ puntajeDeDelantero
 	^puntajeDelantero.! !
 
 
-!Penales methodsFor: 'play' stamp: 'asd 17/Sep/2026, 11:12:58 pm (UTC)'!
+!Penales methodsFor: 'play' stamp: 'asd 18/Sep/2026, 12:00:41 am (UTC)'!
 !methodProperties: {}!
 arbitroPitaConPelota: pelota delanteroRemataAlArcoConDireccion: coordenadaDelantero arqueroSeLanzaEnDirección: coordenadaArquero
-
-	|condicionDeGol|
 	
-	(coordenadaDelantero between: 0@0 and: 2@2)ifFalse: [^self error: self class direccionTiroFueraDeRango.].
-	(coordenadaArquero between: 0@0 and: 2@2)ifFalse: [^self error: self class direccionArqueroFueraDeRango.].
+	self validarRangoCoordenadas: coordenadaDelantero y: coordenadaArquero.
 	
 	delantero direccionUltimaJugada: coordenadaDelantero.
 	arquero direccionUltimaJugada: coordenadaArquero.
-	unaPelota := pelota.
-	actualVar := Var new initializeWith: delantero and: arquero and: pelota.
-	condicionDeGol := ((delantero fuerzaDelTiro: pelota) > (arquero fuerzaDeAtajada: pelota y: delantero tipoDeTiro)) or: (arquero atajo: delantero direccionResultante y: pelota) not.
+	varActual := Var new initializeWith: delantero and: arquero and: pelota.
 	
-	(condicionDeGol)ifTrue: [self delanteroMeteGol] ifFalse: [self arqueroAtaja].
+	(varActual arqueroAtajo)ifTrue: [self arqueroAtaja] ifFalse: [self delanteroMeteGol].
 	
 	
 	
@@ -283,23 +278,31 @@ arbitroPitaConPelota: pelota delanteroRemataAlArcoConDireccion: coordenadaDelant
 	
 	! !
 
-!Penales methodsFor: 'play' stamp: 'asd 17/Sep/2026, 6:05:27 am (UTC)'!
+!Penales methodsFor: 'play' stamp: 'asd 17/Sep/2026, 11:51:45 pm (UTC)'!
 !methodProperties: {}!
 varDireccionRemateResultante
 
-	^actualVar direccionRemateResultante.! !
+	^varActual direccionRemateResultante.! !
 
-!Penales methodsFor: 'play' stamp: 'asd 17/Sep/2026, 6:05:46 am (UTC)'!
+!Penales methodsFor: 'play' stamp: 'asd 17/Sep/2026, 11:51:45 pm (UTC)'!
 !methodProperties: {}!
 varFuerzaResultanteDeAtajada
 
-	^actualVar fuerzaResultanteDeAtajada.! !
+	^varActual fuerzaResultanteDeAtajada.! !
 
-!Penales methodsFor: 'play' stamp: 'asd 17/Sep/2026, 6:06:08 am (UTC)'!
+!Penales methodsFor: 'play' stamp: 'asd 17/Sep/2026, 11:51:45 pm (UTC)'!
 !methodProperties: {}!
 varFuerzaResultanteDeTiro
 
-	^actualVar fuerzaResultanteDeTiro.! !
+	^varActual fuerzaResultanteDeTiro.! !
+
+
+!Penales methodsFor: 'validation' stamp: 'asd 17/Sep/2026, 11:47:34 pm (UTC)'!
+!methodProperties: {}!
+validarRangoCoordenadas: coordenadaDelantero y: coordenadaArquero
+
+	(coordenadaDelantero between: 0@0 and: 2@2)ifFalse: [^self error: self class direccionTiroFueraDeRango.].
+	(coordenadaArquero between: 0@0 and: 2@2)ifFalse: [^self error: self class direccionArqueroFueraDeRango.].! !
 
 
 !Penales methodsFor: 'initialize' stamp: 'asd 15/Sep/2026, 11:49:34 pm (UTC)'!
@@ -309,12 +312,12 @@ initialize
 	puntajeDelantero := 0.
 	puntajeArquero := 0.! !
 
-!Penales methodsFor: 'initialize' stamp: 'asd 15/Sep/2026, 11:43:00 pm (UTC)'!
+!Penales methodsFor: 'initialize' stamp: 'asd 18/Sep/2026, 12:01:49 am (UTC)'!
 !methodProperties: {}!
 initializeWith: unDelantero and: unArquero
 
 	delantero := unDelantero.
-	arquero := unArquero .! !
+	arquero := unArquero.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -568,6 +571,24 @@ Object subclass: #Var
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Penales'!
+
+!Var methodsFor: 'access' stamp: 'asd 17/Sep/2026, 11:59:41 pm (UTC)'!
+!methodProperties: {}!
+arqueroAtajo
+
+	^self arqueroIntersepto and: self arqueroMasFuerteQueTiro.! !
+
+!Var methodsFor: 'access' stamp: 'asd 17/Sep/2026, 11:55:28 pm (UTC)'!
+!methodProperties: {}!
+arqueroIntersepto
+
+	^arquero atajo: delantero direccionResultante y: pelota! !
+
+!Var methodsFor: 'access' stamp: 'asd 17/Sep/2026, 11:59:01 pm (UTC)'!
+!methodProperties: {}!
+arqueroMasFuerteQueTiro
+
+	^self fuerzaResultanteDeAtajada  >= self fuerzaResultanteDeTiro.! !
 
 !Var methodsFor: 'access' stamp: 'asd 17/Sep/2026, 9:21:02 pm (UTC)'!
 !methodProperties: {}!
