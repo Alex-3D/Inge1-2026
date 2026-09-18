@@ -42,13 +42,6 @@ initializeWith: unaFuerza
 Jugador class
 	instanceVariableNames: ''!
 
-!Jugador class methodsFor: 'message errors' stamp: 'asd 16/Sep/2026, 4:00:24 am (UTC)'!
-!methodProperties: {}!
-direccionUltimaJugadaError
-
-	^'Aun no hubo jugada!!'! !
-
-
 !Jugador class methodsFor: 'instance creation' stamp: 'asd 16/Sep/2026, 12:37:35 am (UTC)'!
 !methodProperties: {}!
 decideTirarAColocarSuFuerzaBaseEs: unaFuerza
@@ -61,6 +54,13 @@ esperaPorTiroYSeAdelantaSuFuerzaBaseEs: unaFuerza
 
 	^self new initializeWith: unaFuerza.! !
 
+
+!Jugador class methodsFor: 'message errors' stamp: 'asd 16/Sep/2026, 4:00:24 am (UTC)'!
+!methodProperties: {}!
+direccionUltimaJugadaError
+
+	^'Aun no hubo jugada!!'! !
+
 
 !classDefinition: #Arquero category: #Penales!
 Jugador subclass: #Arquero
@@ -68,14 +68,6 @@ Jugador subclass: #Arquero
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Penales'!
-
-!Arquero methodsFor: 'initialize' stamp: 'asd 16/Sep/2026, 3:39:41 am (UTC)'!
-!methodProperties: {}!
-initializeWith: unaFuerza and: unTipoDeAtajada
-
-	self initializeWith: unaFuerza.
-	tipoDeAtajada := unTipoDeAtajada.! !
-
 
 !Arquero methodsFor: 'access' stamp: 'asd 17/Sep/2026, 9:43:40 pm (UTC)'!
 !methodProperties: {}!
@@ -89,6 +81,26 @@ fuerzaDeAtajada: unaPelota y: unTipoDeTiro
 
 	^tipoDeAtajada fuerzaDeJugada: unaPelota y: fuerzaBase y: unTipoDeTiro.! !
 
+
+!Arquero methodsFor: 'initialize' stamp: 'asd 16/Sep/2026, 3:39:41 am (UTC)'!
+!methodProperties: {}!
+initializeWith: unaFuerza and: unTipoDeAtajada
+
+	self initializeWith: unaFuerza.
+	tipoDeAtajada := unTipoDeAtajada.! !
+
+
+!Arquero methodsFor: 'acctions' stamp: 'asd 18/Sep/2026, 5:15:53 pm (UTC)'!
+!methodProperties: {}!
+tePatearonAColocarConJabulani: unVar y: unaFuerzaTiro y: coordenadaResultanteTiro
+
+	tipoDeAtajada sePateoAColocarConJabulani: unVar y: unaFuerzaTiro y: fuerzaBase y: coordenadaResultanteTiro y: self direccionUltimaJugada.! !
+
+!Arquero methodsFor: 'acctions' stamp: 'asd 18/Sep/2026, 5:16:25 pm (UTC)'!
+!methodProperties: {}!
+tePatearonAColocarConPlayera: unVar y: unaFuerzaTiro y: coordenadaResultanteTiro
+
+	tipoDeAtajada sePateoAColocarConPlayera: unVar y: unaFuerzaTiro y: fuerzaBase y: coordenadaResultanteTiro y: self direccionUltimaJugada. ! !
 
 !Arquero methodsFor: 'acctions' stamp: 'asd 18/Sep/2026, 3:10:38 am (UTC)'!
 !methodProperties: {}!
@@ -136,18 +148,17 @@ initializeWith: unaFuerza and: unTipoDeTiro
 	tipoDeTiro := unTipoDeTiro.! !
 
 
-!Delantero methodsFor: 'acctions' stamp: 'asd 18/Sep/2026, 1:48:29 am (UTC)'!
-!methodProperties: {}!
-patearCon: unVar y: unaPelota
-
-	tipoDeTiro patearCon: unVar y: fuerzaBase y: unaPelota y: self direccionUltimaJugada.! !
-
-
 !Delantero methodsFor: 'access' stamp: 'asd 17/Sep/2026, 10:20:59 pm (UTC)'!
 !methodProperties: {}!
 direccionResultante
 
 	^tipoDeTiro coordenadaJugada: direccionUltimaJugada.! !
+
+!Delantero methodsFor: 'access' stamp: 'asd 16/Sep/2026, 12:51:26 am (UTC)'!
+!methodProperties: {}!
+fuerzaDelTiro
+
+	^fuerzaBase * tipoDeTiro fuerzaDelTiro.! !
 
 !Delantero methodsFor: 'access' stamp: 'asd 17/Sep/2026, 7:11:27 am (UTC)'!
 !methodProperties: {}!
@@ -160,6 +171,13 @@ fuerzaDelTiro: unaPelota
 tipoDeTiro
 
 	^tipoDeTiro.! !
+
+
+!Delantero methodsFor: 'acctions' stamp: 'asd 18/Sep/2026, 1:48:29 am (UTC)'!
+!methodProperties: {}!
+patearCon: unVar y: unaPelota
+
+	tipoDeTiro patearCon: unVar y: fuerzaBase y: unaPelota y: self direccionUltimaJugada.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -187,23 +205,6 @@ Object subclass: #Pelota
 	poolDictionaries: ''
 	category: 'Penales'!
 
-!Pelota methodsFor: 'initialize' stamp: 'asd 17/Sep/2026, 5:38:19 am (UTC)'!
-!methodProperties: {}!
-initialize
-
-	multiplicadorFuerzaDelantero := 1.
-	visiblieAnteElVar := true.! !
-
-!Pelota methodsFor: 'initialize' stamp: 'asd 17/Sep/2026, 9:12:31 pm (UTC)'!
-!methodProperties: {}!
-initializeWith: unMultiplicadorDelantero and: unaPenalizacionDelantero and: unMultiplicadorArquero and: visibilidad
-
-	multiplicadorFuerzaDelantero := unMultiplicadorDelantero.
-	penalizacionFuerzaDelantero := unaPenalizacionDelantero.
-	multiplicadorFuerzaArquero := unMultiplicadorArquero.
-	visiblieAnteElVar := visibilidad.! !
-
-
 !Pelota methodsFor: 'access' stamp: 'asd 17/Sep/2026, 6:19:05 am (UTC)'!
 !methodProperties: {}!
 fuerzaArquero
@@ -228,23 +229,48 @@ visiblieAnteElVar
 
 	^visiblieAnteElVar! !
 
+
+!Pelota methodsFor: 'initialize' stamp: 'asd 17/Sep/2026, 5:38:19 am (UTC)'!
+!methodProperties: {}!
+initialize
+
+	multiplicadorFuerzaDelantero := 1.
+	visiblieAnteElVar := true.! !
+
+!Pelota methodsFor: 'initialize' stamp: 'asd 17/Sep/2026, 9:12:31 pm (UTC)'!
+!methodProperties: {}!
+initializeWith: unMultiplicadorDelantero and: unaPenalizacionDelantero and: unMultiplicadorArquero and: visibilidad
+
+	multiplicadorFuerzaDelantero := unMultiplicadorDelantero.
+	penalizacionFuerzaDelantero := unaPenalizacionDelantero.
+	multiplicadorFuerzaArquero := unMultiplicadorArquero.
+	visiblieAnteElVar := visibilidad.! !
+
+!Pelota methodsFor: 'initialize' stamp: 'asd 18/Sep/2026, 5:42:10 pm (UTC)'!
+!methodProperties: {}!
+initializeWithFuerzaDelantero: unMultiplicadorDelantero andPenalidadDelantero: unaPenalizacionDelantero
+
+	multiplicadorFuerzaDelantero := unMultiplicadorDelantero.
+	penalizacionFuerzaDelantero := unaPenalizacionDelantero.! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'Pelota class' category: #Penales!
 Pelota class
 	instanceVariableNames: ''!
 
-!Pelota class methodsFor: 'prototipes' stamp: 'asd 17/Sep/2026, 10:39:35 pm (UTC)'!
+!Pelota class methodsFor: 'prototipes' stamp: 'asd 18/Sep/2026, 5:43:47 pm (UTC)'!
 !methodProperties: {}!
 jabulaniSudafricanaRapida
 
-	^self new initializeWith: 0.2 and: 0 and: 0 and: false.! !
+	"^self new initializeWith: 0.2 and: 0 and: 0 and: false."
+	^Jabulani new initializeWithFuerzaDelantero: 0.2 andPenalidadDelantero: 0! !
 
-!Pelota class methodsFor: 'prototipes' stamp: 'asd 17/Sep/2026, 10:36:06 pm (UTC)'!
+!Pelota class methodsFor: 'prototipes' stamp: 'asd 18/Sep/2026, 5:44:40 pm (UTC)'!
 !methodProperties: {}!
 playeraLentaCostaAzul
 
-	^self new initializeWith: 0 and: 0.2 and: 0.5 and: true.! !
+	^Playera new initializeWithFuerzaDelantero: 0 andPenalidadDelantero: 0.2 .! !
 
 
 !classDefinition: #Jabulani category: #Penales!
@@ -253,6 +279,12 @@ Pelota subclass: #Jabulani
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Penales'!
+
+!Jabulani methodsFor: 'acctions' stamp: 'asd 18/Sep/2026, 5:07:49 pm (UTC)'!
+!methodProperties: {}!
+seTiroAColocar: unVar conFuerza: fuerzaResultante yCoordenadaResultante: coordenadaResultante
+
+	unVar sePateoAColocarConJabulaniyFuerza: fuerzaResultante yCoordenada: coordenadaResultante.! !
 
 !Jabulani methodsFor: 'acctions' stamp: 'asd 18/Sep/2026, 2:58:28 am (UTC)'!
 !methodProperties: {}!
@@ -267,6 +299,12 @@ Pelota subclass: #Playera
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Penales'!
+
+!Playera methodsFor: 'acctions' stamp: 'asd 18/Sep/2026, 5:08:19 pm (UTC)'!
+!methodProperties: {}!
+seTiroAColocar: unVar conFuerza: fuerzaResultante yCoordenadaResultante: coordenadaResultante
+
+	unVar sePateoAColocarConPlayerayFuerza: fuerzaResultante yCoordenada: coordenadaResultante.! !
 
 !Playera methodsFor: 'acctions' stamp: 'asd 18/Sep/2026, 3:02:31 am (UTC)'!
 !methodProperties: {}!
@@ -346,14 +384,6 @@ varFuerzaResultanteDeTiro
 	^varActual fuerzaResultanteDeTiro.! !
 
 
-!Penales methodsFor: 'validation' stamp: 'asd 17/Sep/2026, 11:47:34 pm (UTC)'!
-!methodProperties: {}!
-validarRangoCoordenadas: coordenadaDelantero y: coordenadaArquero
-
-	(coordenadaDelantero between: 0@0 and: 2@2)ifFalse: [^self error: self class direccionTiroFueraDeRango.].
-	(coordenadaArquero between: 0@0 and: 2@2)ifFalse: [^self error: self class direccionArqueroFueraDeRango.].! !
-
-
 !Penales methodsFor: 'initialize' stamp: 'asd 15/Sep/2026, 11:49:34 pm (UTC)'!
 !methodProperties: {}!
 initialize
@@ -367,6 +397,14 @@ initializeWith: unDelantero and: unArquero
 
 	delantero := unDelantero.
 	arquero := unArquero.! !
+
+
+!Penales methodsFor: 'validation' stamp: 'asd 17/Sep/2026, 11:47:34 pm (UTC)'!
+!methodProperties: {}!
+validarRangoCoordenadas: coordenadaDelantero y: coordenadaArquero
+
+	(coordenadaDelantero between: 0@0 and: 2@2)ifFalse: [^self error: self class direccionTiroFueraDeRango.].
+	(coordenadaArquero between: 0@0 and: 2@2)ifFalse: [^self error: self class direccionArqueroFueraDeRango.].! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -514,11 +552,11 @@ fuerzaDeJugadaAColocarConJabulani: unaFuerza
 
 	^unaFuerza * multiplicadorDeFuerza.! !
 
-!AtajadaSeTiraAntes methodsFor: 'access' stamp: 'asd 18/Sep/2026, 3:22:55 am (UTC)'!
+!AtajadaSeTiraAntes methodsFor: 'access' stamp: 'asd 18/Sep/2026, 6:56:41 pm (UTC)'!
 !methodProperties: {}!
 fuerzaDeJugadaAColocarConPlayera: unaFuerza
 
-	^unaFuerza*2.! !
+	^unaFuerza*1.5 .! !
 
 !AtajadaSeTiraAntes methodsFor: 'access' stamp: 'asd 18/Sep/2026, 2:22:28 am (UTC)'!
 !methodProperties: {}!
@@ -568,6 +606,30 @@ seIntercepto: coordenadaTiro y: coordenadaArquero y: unaPelota
 
 	^(coordenadaArquero = coordenadaTiro).! !
 
+!AtajadaSeTiraAntes methodsFor: 'access' stamp: 'asd 18/Sep/2026, 5:25:54 pm (UTC)'!
+!methodProperties: {}!
+sePateoAColocarConJabulani: unVar y: fuerzaArquero y: fuerzaDelantero y: coordenadaTiro y: coordenadaAtajada
+
+	|coordenadaResultante fuerzaResultante resultado|
+	
+	coordenadaResultante := self interceptarAColocarConJabulani: coordenadaTiro y: coordenadaAtajada.
+	fuerzaResultante := self fuerzaDeJugadaAColocarConJabulani: fuerzaArquero.
+	resultado := self atajarCon: fuerzaResultante y: fuerzaDelantero. 
+	
+	unVar resultadoPenalFue: resultado conCoordenadaArquero: coordenadaResultante yFuerzaResultanteArquero: fuerzaResultante.! !
+
+!AtajadaSeTiraAntes methodsFor: 'access' stamp: 'asd 18/Sep/2026, 5:26:25 pm (UTC)'!
+!methodProperties: {}!
+sePateoAColocarConPlayera: unVar y: fuerzaArquero y: fuerzaDelantero y: coordenadaTiro y: coordenadaAtajada
+
+	|coordenadaResultante fuerzaResultante resultado|
+	
+	coordenadaResultante := self interceptarAColocarConPlayera: coordenadaTiro y: coordenadaAtajada.
+	fuerzaResultante := self fuerzaDeJugadaAColocarConPlayera: fuerzaArquero.
+	resultado := self atajarCon: fuerzaResultante y: fuerzaDelantero. 
+	
+	unVar resultadoPenalFue: resultado conCoordenadaArquero: coordenadaResultante yFuerzaResultanteArquero: fuerzaResultante.! !
+
 !AtajadaSeTiraAntes methodsFor: 'access' stamp: 'asd 18/Sep/2026, 2:41:22 am (UTC)'!
 !methodProperties: {}!
 sePateoAMatarConJabulani: unVar y: fuerzaArquero y: fuerzaDelantero y: coordenadaTiro y: coordenadaAtajada
@@ -613,6 +675,18 @@ fuerzaDeJugada: unaPelota y: unaFuerza y: unTipoDeTiro
 
 	^unaFuerza * multiplicadorDeFuerza.! !
 
+!AtajadaSeTiraDespues methodsFor: 'access' stamp: 'asd 18/Sep/2026, 6:01:23 pm (UTC)'!
+!methodProperties: {}!
+fuerzaDeJugadaAColocarConJabulani: unaFuerza
+
+	^unaFuerza.! !
+
+!AtajadaSeTiraDespues methodsFor: 'access' stamp: 'asd 18/Sep/2026, 6:02:49 pm (UTC)'!
+!methodProperties: {}!
+fuerzaDeJugadaAColocarConPlayera: unaFuerza
+
+	^unaFuerza.! !
+
 !AtajadaSeTiraDespues methodsFor: 'access' stamp: 'asd 18/Sep/2026, 3:41:11 am (UTC)'!
 !methodProperties: {}!
 interceptarAColocarConJabulani: coordenadaTiro y: coordenadaArquero
@@ -643,9 +717,33 @@ seIntercepto: coordenadaTiro y: coordenadaArquero y: unaPelota
 
 	^(coordenadaArquero x = coordenadaTiro x) and: unaPelota visiblieAnteElVar not.! !
 
-!AtajadaSeTiraDespues methodsFor: 'access' stamp: 'asd 18/Sep/2026, 3:47:17 am (UTC)'!
+!AtajadaSeTiraDespues methodsFor: 'access' stamp: 'asd 18/Sep/2026, 6:53:17 pm (UTC)'!
 !methodProperties: {}!
-sePateoAMatarConJabulani: unVar y: fuerzaArquero y: fuerzaDelantero y: coordenadaTiro y: coordenadaAtajada
+sePateoAColocarConJabulani: unVar y: fuerzaDelantero y: fuerzaArquero y: coordenadaTiro y: coordenadaAtajada
+
+	|coordenadaResultante fuerzaResultante resultado|
+	
+	coordenadaResultante := self interceptarAColocarConJabulani: coordenadaTiro y: coordenadaAtajada.
+	fuerzaResultante := self fuerzaDeJugadaAColocarConJabulani: fuerzaArquero.
+	resultado := coordenadaResultante and: (self atajarCon: fuerzaResultante y: fuerzaDelantero). 
+	
+	unVar resultadoPenalFue: resultado conCoordenadaArquero: coordenadaResultante yFuerzaResultanteArquero: fuerzaResultante.! !
+
+!AtajadaSeTiraDespues methodsFor: 'access' stamp: 'asd 18/Sep/2026, 6:37:02 pm (UTC)'!
+!methodProperties: {}!
+sePateoAColocarConPlayera: unVar y: fuerzaDelantero y: fuerzaArquero y: coordenadaTiro y: coordenadaAtajada
+
+	|coordenadaResultante fuerzaResultante resultado|
+	
+	coordenadaResultante := self interceptarAColocarConPlayera: coordenadaTiro y: coordenadaAtajada.
+	fuerzaResultante := self fuerzaDeJugadaAColocarConPlayera: fuerzaArquero.
+	resultado := self atajarCon: fuerzaResultante y: fuerzaDelantero. 
+	
+	unVar resultadoPenalFue: resultado conCoordenadaArquero: coordenadaResultante yFuerzaResultanteArquero: fuerzaResultante.! !
+
+!AtajadaSeTiraDespues methodsFor: 'access' stamp: 'asd 18/Sep/2026, 6:36:07 pm (UTC)'!
+!methodProperties: {}!
+sePateoAMatarConJabulani: unVar y: fuerzaDelantero y: fuerzaArquero y: coordenadaTiro y: coordenadaAtajada
 
 	|coordenadaResultante fuerzaResultante resultado|
 	
@@ -655,9 +753,9 @@ sePateoAMatarConJabulani: unVar y: fuerzaArquero y: fuerzaDelantero y: coordenad
 	
 	unVar resultadoPenalFue: resultado conCoordenadaArquero: coordenadaResultante yFuerzaResultanteArquero: fuerzaResultante.! !
 
-!AtajadaSeTiraDespues methodsFor: 'access' stamp: 'asd 18/Sep/2026, 3:47:31 am (UTC)'!
+!AtajadaSeTiraDespues methodsFor: 'access' stamp: 'asd 18/Sep/2026, 6:36:21 pm (UTC)'!
 !methodProperties: {}!
-sePateoAMatarConPlayera: unVar y: fuerzaArquero y: fuerzaDelantero y: coordenadaTiro y: coordenadaAtajada
+sePateoAMatarConPlayera: unVar y: fuerzaDelantero y: fuerzaArquero y: coordenadaTiro y: coordenadaAtajada
 
 	|coordenadaResultante fuerzaResultante resultado|
 	
@@ -688,11 +786,48 @@ fuerzaDeJugada: unaPelota y: unaFuerza y: coordenadaTiro
 
 	self subclassResponsibility! !
 
+!Tiro methodsFor: 'access' stamp: 'asd 16/Sep/2026, 12:41:34 am (UTC)'!
+!methodProperties: {}!
+fuerzaDelTiro
+
+	^multiplicadorDeFuerza.! !
+
 !Tiro methodsFor: 'access' stamp: 'asd 18/Sep/2026, 1:36:11 am (UTC)'!
 !methodProperties: {}!
 patearCon: unVar y:unaFuerza y: unaPelota
 
 	^self subclassResponsibility.! !
+
+
+!Tiro methodsFor: 'initialize' stamp: 'asd 16/Sep/2026, 12:42:56 am (UTC)'!
+!methodProperties: {}!
+initialize
+
+	multiplicadorDeFuerza := 0.! !
+
+!Tiro methodsFor: 'initialize' stamp: 'asd 16/Sep/2026, 12:42:36 am (UTC)'!
+!methodProperties: {}!
+initializeWith: unMultiplo
+
+	multiplicadorDeFuerza := unMultiplo.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Tiro class' category: #Penales!
+Tiro class
+	instanceVariableNames: ''!
+
+!Tiro class methodsFor: 'prototype' stamp: 'asd 16/Sep/2026, 12:44:51 am (UTC)'!
+!methodProperties: {}!
+tiroAColocar
+	
+	^self new initializeWith: 0.5 .! !
+
+!Tiro class methodsFor: 'prototype' stamp: 'asd 16/Sep/2026, 12:44:20 am (UTC)'!
+!methodProperties: {}!
+tiroAMatar
+	
+	^self new initializeWith: 1.! !
 
 
 !classDefinition: #TiroAColocar category: #Penales!
@@ -708,15 +843,26 @@ coordenadaJugada: coordenadaTiro
 
 	^coordenadaTiro.! !
 
-!TiroAColocar methodsFor: 'access' stamp: 'asd 17/Sep/2026, 9:55:31 pm (UTC)'!
+!TiroAColocar methodsFor: 'access' stamp: 'asd 18/Sep/2026, 6:16:13 pm (UTC)'!
 !methodProperties: {}!
-fuerzaDeJugada: unaPelota y: unaFuerza 
+fuerzaDeJugada: unaFuerza y: unaPelota
 
 	|fuerzaJugada|
 	
 	fuerzaJugada := unaFuerza * multiplicadorDeFuerza.
 	
 	^fuerzaJugada - (fuerzaJugada * unaPelota penalizacionDelantero).! !
+
+!TiroAColocar methodsFor: 'access' stamp: 'asd 18/Sep/2026, 5:55:38 pm (UTC)'!
+!methodProperties: {}!
+patearCon: unVar y: unaFuerza y: unaPelota y: coordenadaTiro
+
+	|coordenadaResultante fuerzaResultante| 
+	
+	coordenadaResultante := self coordenadaJugada: coordenadaTiro.
+	fuerzaResultante  := self fuerzaDeJugada: unaFuerza y: unaPelota.
+
+	unaPelota seTiroAColocar: unVar conFuerza: fuerzaResultante yCoordenadaResultante: coordenadaResultante.! !
 
 !TiroAColocar methodsFor: 'access' stamp: 'asd 17/Sep/2026, 11:34:01 pm (UTC)'!
 !methodProperties: {}!
@@ -856,21 +1002,37 @@ resultadoPenalFue: seAtajo conCoordenadaArquero: coordenadaArquero yFuerzaResult
 	atajo := seAtajo.
 	! !
 
-!Var methodsFor: 'play' stamp: 'asd 18/Sep/2026, 3:06:55 am (UTC)'!
+!Var methodsFor: 'play' stamp: 'asd 18/Sep/2026, 6:26:31 pm (UTC)'!
+!methodProperties: {}!
+sePateoAColocarConJabulaniyFuerza: fuerzaResultante yCoordenada: coordenadaResultante
+
+	self actualizarDelanteroConFuerza: fuerzaResultante yCoordenada: coordenadaResultante.
+	
+	arquero tePatearonAColocarConJabulani: self y: fuerzaResultanteDeTiro y: coordenadaResultante.! !
+
+!Var methodsFor: 'play' stamp: 'asd 18/Sep/2026, 6:38:22 pm (UTC)'!
+!methodProperties: {}!
+sePateoAColocarConPlayerayFuerza: fuerzaResultante yCoordenada: coordenadaResultante
+
+	self actualizarDelanteroConFuerza: fuerzaResultante yCoordenada: coordenadaResultante.
+	
+	arquero tePatearonAColocarConPlayera: self y: fuerzaResultanteDeTiro y: coordenadaResultante.! !
+
+!Var methodsFor: 'play' stamp: 'asd 18/Sep/2026, 6:38:43 pm (UTC)'!
 !methodProperties: {}!
 sePateoAMatarConJabulaniyFuerza: fuerzaResultante yCoordenada: coordenadaResultante
 
 	self actualizarDelanteroConFuerza: fuerzaResultante yCoordenada: coordenadaResultante.
 	
-	arquero tePatearonAMatarConJabulani: self y: fuerzaResultanteDeTiro y: delantero direccionUltimaJugada.! !
+	arquero tePatearonAMatarConJabulani: self y: fuerzaResultanteDeTiro y: coordenadaResultante.! !
 
-!Var methodsFor: 'play' stamp: 'asd 18/Sep/2026, 3:11:23 am (UTC)'!
+!Var methodsFor: 'play' stamp: 'asd 18/Sep/2026, 6:38:50 pm (UTC)'!
 !methodProperties: {}!
 sePateoAMatarConPlayerayFuerza: fuerzaResultante yCoordenada: coordenadaResultante
 
 	self actualizarDelanteroConFuerza: fuerzaResultante yCoordenada: coordenadaResultante.
 	
-	arquero tePatearonAMatarConPlayera: self y: fuerzaResultanteDeTiro y: delantero direccionUltimaJugada.! !
+	arquero tePatearonAMatarConPlayera: self y: fuerzaResultanteDeTiro y: coordenadaResultante.! !
 
 
 !Var methodsFor: 'initialize' stamp: 'asd 17/Sep/2026, 6:00:22 am (UTC)'!
