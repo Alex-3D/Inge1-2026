@@ -5,9 +5,19 @@ Object subclass: #MarsRover
 	poolDictionaries: ''
 	category: 'Practica-Mars-Rover'!
 
-!MarsRover methodsFor: 'initialization' stamp: 'asd 2/Oct/2026, 11:44:56 pm (UTC)'!
+!MarsRover methodsFor: 'initialization' stamp: 'asd 4/Oct/2026, 5:25:19 am (UTC)'!
 !methodProperties: {}!
 enCoordenada: unaCoordenada apuntandoACoordenada: coordenadaApuntada 
+
+	self validarCoordenadaPosicion: unaCoordenada yCoordenadaApuntanda: coordenadaApuntada.
+	
+	
+	posicion := unaCoordenada .
+	apuntandoA := coordenadaApuntada .! !
+
+!MarsRover methodsFor: 'initialization' stamp: 'asd 4/Oct/2026, 5:32:14 am (UTC)'!
+!methodProperties: {}!
+validarCoordenadaApuntandaEsUnCardinal: coordenadaApuntada enPosicion: unaCoordenada
 
 	|puntosCardinales|
 	
@@ -16,14 +26,18 @@ enCoordenada: unaCoordenada apuntandoACoordenada: coordenadaApuntada
 						(unaCoordenada y-1)@(unaCoordenada x). (unaCoordenada y)@(unaCoordenada x-1)
 					}.
 	
-	(unaCoordenada = nil) ifTrue: [^self error: self coordenadasInvalidas].
-	(coordenadaApuntada = nil) ifTrue: [^self error: self coordenadasInvalidas].
 	((puntosCardinales select: [ :x| x= coordenadaApuntada]) size = 1) ifFalse: [^self error: MarsRover 
-		coordenadaApuntadaDebeSerUnCardinal].
+		coordenadaApuntadaDebeSerUnCardinal].! !
+
+!MarsRover methodsFor: 'initialization' stamp: 'asd 4/Oct/2026, 5:32:54 am (UTC)'!
+!methodProperties: {}!
+validarCoordenadaPosicion: unaCoordenada yCoordenadaApuntanda: coordenadaApuntada 
+
+	(unaCoordenada class = Point) ifFalse: [^self error: MarsRover coordenadasInvalidas].
+	(coordenadaApuntada class = Point) ifFalse: [^self error: MarsRover coordenadasInvalidas].
 	
 	
-	posicion := unaCoordenada .
-	apuntandoA := coordenadaApuntada .! !
+	self validarCoordenadaApuntandaEsUnCardinal: coordenadaApuntada enPosicion: unaCoordenada.! !
 
 
 !MarsRover methodsFor: 'accessing' stamp: 'asd 2/Oct/2026, 7:13:38 pm (UTC)'!
@@ -39,16 +53,59 @@ posicion
 	^posicion.! !
 
 
-!MarsRover methodsFor: 'actions' stamp: 'asd 3/Oct/2026, 12:23:52 am (UTC)'!
+!MarsRover methodsFor: 'actions' stamp: 'asd 5/Oct/2026, 12:09:04 am (UTC)'!
 !methodProperties: {}!
-leerComandos: comandos 
+avanzarPosicionEnBaseACoordenada: coordenadaApuntada
+	
+	posicion := (coordenadaApuntada x)@(coordenadaApuntada y).
+	! !
+
+!MarsRover methodsFor: 'actions' stamp: 'asd 5/Oct/2026, 12:01:26 am (UTC)'!
+!methodProperties: {}!
+elegirEjeDeMovimiento: unaCantidad
+	
+	(posicion y = apuntandoA y) ifTrue: [self moverEnX: unaCantidad ] ifFalse: [self moverEnY: unaCantidad ].
+	
+	"comandos do: [ :x|
+		(x = $F) ifTrue: [posicion := (posicion x )@(posicion y+1). apuntandoA := (apuntandoA x )@(apuntandoA y+1)].
+		(x = $B) ifTrue: [posicion := (posicion x )@(posicion y-1). apuntandoA := (apuntandoA x )@(apuntandoA y-1)].
+		(x = $L) ifTrue: [apuntandoA := (apuntandoA x-1 )@(apuntandoA y-1)]. 
+		(x = $R) ifTrue: [apuntandoA := (apuntandoA x+1 )@(apuntandoA y-1)].
+	]"! !
+
+!MarsRover methodsFor: 'actions' stamp: 'asd 5/Oct/2026, 12:44:11 am (UTC)'!
+!methodProperties: {}!
+leerComandos: comandos
+	|apuntandoAInicial|
 	
 	comandos do: [ :x|
-		(x = $F) ifTrue: [posicion := (posicion x )@(posicion y+1)].
-		(x = $B) ifTrue: [posicion := (posicion x )@(posicion y-1)].
-		(x = $L) ifTrue: [posicion := (posicion x-1 )@(posicion y)]. 
-		(x = $R) ifTrue: [posicion := (posicion x+1)@(posicion y)].
+		apuntandoAInicial := apuntandoA.
+		(x = $F) ifTrue: [self elegirEjeDeMovimiento: 1. self avanzarPosicionEnBaseACoordenada: apuntandoAInicial ].
+		(x = $B) ifTrue: [self elegirEjeDeMovimiento: -1. self retrocederPosicionEnBaseACoordenada: apuntandoAInicial].
+		(x = $L) ifTrue: [apuntandoA := (apuntandoA x-1 )@(apuntandoA y-1)]. 
+		(x = $R) ifTrue: [apuntandoA := (apuntandoA x+1 )@(apuntandoA y-1)].
 	]! !
+
+!MarsRover methodsFor: 'actions' stamp: 'asd 5/Oct/2026, 12:00:00 am (UTC)'!
+!methodProperties: {}!
+moverEnX: unaCantidad
+	
+	apuntandoA := (apuntandoA x + unaCantidad)@(apuntandoA y).
+	! !
+
+!MarsRover methodsFor: 'actions' stamp: 'asd 5/Oct/2026, 12:00:06 am (UTC)'!
+!methodProperties: {}!
+moverEnY: unaCantidad
+	
+	apuntandoA := (apuntandoA x)@(apuntandoA y + unaCantidad).
+	! !
+
+!MarsRover methodsFor: 'actions' stamp: 'asd 5/Oct/2026, 12:20:03 am (UTC)'!
+!methodProperties: {}!
+retrocederPosicionEnBaseACoordenada: coordenadaApuntada
+	
+	posicion := (coordenadaApuntada x)@(coordenadaApuntada y-2).
+	! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -76,18 +133,18 @@ TestCase subclass: #MarsRoverTest
 	poolDictionaries: ''
 	category: 'Practica-Mars-Rover'!
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'asd 2/Oct/2026, 11:28:25 pm (UTC)'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'asd 4/Oct/2026, 5:38:37 am (UTC)'!
 !methodProperties: {}!
 test01DebeExistirMarsRoverEnCoordenadaApuntandoAOtraCoordenada
 
-	|rover coordenadaApuntada unaCoordenada |
+	|rover coordenadaApuntada coordenadaInicial |
 	
-	unaCoordenada := 1@1.
-	coordenadaApuntada := 1@2.
+	rover := self unMarsRoverApuntandoAlNorte.
 	
-	rover := MarsRover new enCoordenada: unaCoordenada apuntandoACoordenada: coordenadaApuntada.
+	coordenadaInicial := rover posicion .
+	coordenadaApuntada := rover apuntandoA.
 	
-	self assert: (rover posicion = unaCoordenada).
+	self assert: (rover posicion = coordenadaInicial).
 	self assert: (rover apuntandoA = coordenadaApuntada ).! !
 
 !MarsRoverTest methodsFor: 'tests' stamp: 'asd 2/Oct/2026, 7:09:21 pm (UTC)'!
@@ -124,122 +181,145 @@ test03LaCoordenadaAPuntadaDebeSerUnPuntoCardinal
 		
 	! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'asd 3/Oct/2026, 12:05:32 am (UTC)'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'asd 4/Oct/2026, 11:54:52 pm (UTC)'!
 !methodProperties: {}!
-test04ElCaracterBHaceQueSeMuevaHaciaAtras
+test04ElCaracterFHaceQueSeMuevaHaciaAdelante
 
-	|rover coordenadaApuntada unaCoordenada comandos |
+	|rover coordenadaApuntada coordenadaInicial comandos |
 	
-	unaCoordenada := 1@1.
-	coordenadaApuntada :=  2@1.
-	comandos := 'B'.
-	
-	rover := MarsRover new enCoordenada: unaCoordenada apuntandoACoordenada: coordenadaApuntada.
-	rover leerComandos: comandos.
-	
-		
-	self assert: (rover posicion y = (unaCoordenada y-1)).
-	self assert: (rover posicion x = (unaCoordenada x)).
-		
-		
-	! !
-
-!MarsRoverTest methodsFor: 'tests' stamp: 'asd 3/Oct/2026, 12:09:39 am (UTC)'!
-!methodProperties: {}!
-test05ElCaracterFHaceQueSeMuevaHaciaAdelante
-
-	|rover coordenadaApuntada unaCoordenada comandos |
-	
-	unaCoordenada := 1@1.
-	coordenadaApuntada :=  2@1.
 	comandos := 'F'.
 	
-	rover := MarsRover new enCoordenada: unaCoordenada apuntandoACoordenada: coordenadaApuntada.
+	rover := self unMarsRoverApuntandoAlNorte.
+	coordenadaInicial := rover posicion .
+	coordenadaApuntada := rover apuntandoA.
 	rover leerComandos: comandos.
 	
 		
-	self assert: (rover posicion y = (unaCoordenada y+1)).
-	self assert: (rover posicion x = (unaCoordenada x)).
+	self assert: (rover posicion y = (coordenadaInicial y+1)).
+	self assert: (rover posicion x = (coordenadaInicial x)).
+	self assert: (rover apuntandoA y = (coordenadaApuntada y+1)).
+	self assert: (rover apuntandoA x = (coordenadaApuntada x)).
 		
 		
 	! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'asd 3/Oct/2026, 12:10:04 am (UTC)'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'asd 4/Oct/2026, 11:55:43 pm (UTC)'!
 !methodProperties: {}!
-test06ElCaracterLHaceQueSeMuevaHaciaLaIzquierda
+test05ElCaracterBHaceQueSeMuevaHaciaAtras
 
-	|rover coordenadaApuntada unaCoordenada comandos |
+	|rover coordenadaApuntada coordenadaInicial comandos |
 	
-	unaCoordenada := 1@1.
-	coordenadaApuntada :=  2@1.
+	comandos := 'B'.
+	rover := self unMarsRoverApuntandoAlNorte.
+	coordenadaInicial := rover posicion .
+	coordenadaApuntada := rover apuntandoA.
+	rover leerComandos: comandos.
+	
+		
+	self assert: (rover posicion y = (coordenadaInicial y-1)).
+	self assert: (rover posicion x = (coordenadaInicial x)).
+	self assert: (rover apuntandoA y = (coordenadaApuntada y-1)).
+	self assert: (rover apuntandoA x = (coordenadaApuntada x)).
+		
+		
+	! !
+
+!MarsRoverTest methodsFor: 'tests' stamp: 'asd 4/Oct/2026, 5:55:44 am (UTC)'!
+!methodProperties: {}!
+test06ElCaracterLHaceQueRote90GradosHaciaLaIzquierdaYPosicionNoCambia
+
+	|rover coordenadaApuntada coordenadaInicial comandos |
+	
 	comandos := 'L'.
+	rover := self unMarsRoverApuntandoAlNorte.
 	
-	rover := MarsRover new enCoordenada: unaCoordenada apuntandoACoordenada: coordenadaApuntada.
+	coordenadaInicial := rover posicion .
+	coordenadaApuntada := rover apuntandoA.
 	rover leerComandos: comandos.
 	
-		
-	self assert: (rover posicion y = (unaCoordenada y)).
-	self assert: (rover posicion x = (unaCoordenada x-1)).
+	
+	self assert: (rover apuntandoA y = (coordenadaApuntada y-1)).
+	self assert: (rover apuntandoA x = (coordenadaApuntada x-1)).
+	self assert: (rover posicion y = (coordenadaInicial y)).
+	self assert: (rover posicion x = (coordenadaInicial x)).
 		
 		
 	! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'asd 3/Oct/2026, 12:14:58 am (UTC)'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'asd 4/Oct/2026, 6:26:06 am (UTC)'!
 !methodProperties: {}!
-test07ElCaracterRHaceQueSeMuevaHaciaLaDerecha
+test07ElCaracterLHaceQueRote90GradosHaciaLaDerechaYPosicionNoCambia
 
-	|rover coordenadaApuntada unaCoordenada comandos |
+	|rover coordenadaApuntada coordenadaInicial comandos |
 	
-	unaCoordenada := 1@1.
-	coordenadaApuntada :=  2@1.
 	comandos := 'R'.
+	rover := self unMarsRoverApuntandoAlNorte.
 	
-	rover := MarsRover new enCoordenada: unaCoordenada apuntandoACoordenada: coordenadaApuntada.
+	coordenadaInicial := rover posicion .
+	coordenadaApuntada := rover apuntandoA.
 	rover leerComandos: comandos.
-	
 		
-	self assert: (rover posicion y = (unaCoordenada y)).
-	self assert: (rover posicion x = (unaCoordenada x+1)).
+	self assert: (rover apuntandoA y = (coordenadaApuntada y-1)).
+	self assert: (rover apuntandoA x = (coordenadaApuntada x+1)).
+	self assert: (rover posicion y = (coordenadaInicial y)).
+	self assert: (rover posicion x = (coordenadaInicial x)).
 		
 		
 	! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'asd 3/Oct/2026, 12:16:47 am (UTC)'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'asd 4/Oct/2026, 6:27:03 am (UTC)'!
 !methodProperties: {}!
-test08ElCaracterFyRHaceQueSeMuevaHaciaAdelanteALaDerecha
+test08ElCaracterFyRHaceQueSeMuevaHaciaAdelanteYRote90ALaDerechaYLaPsNoCambia
 
-	|rover coordenadaApuntada unaCoordenada comandos |
+	|rover coordenadaApuntada coordenadaInicial comandos |
 	
-	unaCoordenada := 1@1.
-	coordenadaApuntada :=  2@1.
 	comandos := 'FR'.
+	rover := self unMarsRoverApuntandoAlNorte.
 	
-	rover := MarsRover new enCoordenada: unaCoordenada apuntandoACoordenada: coordenadaApuntada.
+	coordenadaInicial := rover posicion .
+	coordenadaApuntada := rover apuntandoA.
 	rover leerComandos: comandos.
 	
 		
-	self assert: (rover posicion y = (unaCoordenada y+1)).
-	self assert: (rover posicion x = (unaCoordenada x+1)).
+	self assert: (rover posicion y = (coordenadaInicial y+1)).
+	self assert: (rover posicion x = (coordenadaInicial x)).
+	self assert: (rover apuntandoA y = (coordenadaApuntada y)).
+	self assert: (rover apuntandoA x = (coordenadaApuntada x+1)).
 		
 		
 	! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'asd 3/Oct/2026, 12:29:48 am (UTC)'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'asd 5/Oct/2026, 12:45:57 am (UTC)'!
 !methodProperties: {}!
 test09ElCaracterFyRyFHaceQueSeMuevaHaciaDosAdelanteALaDerecha
 
-	|rover coordenadaApuntada unaCoordenada comandos |
+	|rover coordenadaApuntada coordenadaInicial comandos |
 	
-	unaCoordenada := 1@1.
-	coordenadaApuntada :=  2@1.
 	comandos := 'FRF'.
+	rover := self unMarsRoverApuntandoAlNorte.
 	
-	rover := MarsRover new enCoordenada: unaCoordenada apuntandoACoordenada: coordenadaApuntada.
+	coordenadaInicial := rover posicion .
+	coordenadaApuntada := rover apuntandoA.
 	rover leerComandos: comandos.
 	
-		
-	self assert: (rover posicion y = (unaCoordenada y+2)).
-	self assert: (rover posicion x = (unaCoordenada x+1)).
+	self assert: (rover posicion y = (coordenadaInicial y+1)).
+	self assert: (rover posicion x = (coordenadaInicial x+1)).
+	self assert: (rover apuntandoA y = (coordenadaApuntada y)).
+	self assert: (rover apuntandoA x = (coordenadaApuntada x+2)).
 		
 		
 	! !
+
+
+!MarsRoverTest methodsFor: 'util' stamp: 'asd 4/Oct/2026, 5:35:15 am (UTC)'!
+!methodProperties: {}!
+unMarsRoverApuntandoAlNorte
+
+	|rover coordenadaApuntada unaCoordenada |
+	
+	unaCoordenada := 1@1.
+	coordenadaApuntada := 1@2.
+	
+	rover := MarsRover new enCoordenada: unaCoordenada apuntandoACoordenada: coordenadaApuntada.
+	
+	^rover .! !
