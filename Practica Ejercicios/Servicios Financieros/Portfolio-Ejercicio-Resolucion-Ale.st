@@ -101,6 +101,72 @@ for: aValue
 	^ self new initializeFor: aValue ! !
 
 
+!classDefinition: #Portfolio category: #'Portfolio-Ejercicio'!
+Object subclass: #Portfolio
+	instanceVariableNames: 'accountSet'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Portfolio-Ejercicio'!
+
+!Portfolio methodsFor: 'balance' stamp: 'asd 14/Oct/2026, 12:21:22 am (UTC)'!
+!methodProperties: {}!
+balance
+	(accountSet isEmptyOrNil) ifFalse: [
+		^accountSet sum: [
+			:anAccount|
+			anAccount balance.
+		].
+	] ifTrue:[^0].! !
+
+
+!Portfolio methodsFor: 'initialization' stamp: 'asd 14/Oct/2026, 12:18:50 am (UTC)'!
+!methodProperties: {}!
+initialize
+
+	accountSet := Set new.! !
+
+!Portfolio methodsFor: 'initialization' stamp: 'asd 14/Oct/2026, 12:20:16 am (UTC)'!
+!methodProperties: {}!
+initializeWith: accounts
+	
+	accounts do: [:anAccount|
+		accountSet add: anAccount.	
+	]! !
+
+
+!Portfolio methodsFor: 'test' stamp: 'asd 14/Oct/2026, 12:37:50 am (UTC)'!
+!methodProperties: {}!
+hasRegistered: aTransaction 
+	|result|
+	
+	result := false.
+	accountSet do: [
+		:anAccount| 
+		result := result or: [anAccount hasRegistered: aTransaction]. 
+	].
+	^result .! !
+
+
+!Portfolio methodsFor: 'cambiame' stamp: 'asd 14/Oct/2026, 12:56:20 am (UTC)'!
+!methodProperties: {}!
+transactionsOf: anAccount
+	
+	(accountSet select: [:ortherAccount | ortherAccount = anAccount ])  ifNotEmpty: [^anAccount transactions.] ifEmpty: [^ self error: self notAccountError.].
+	! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Portfolio class' category: #'Portfolio-Ejercicio'!
+Portfolio class
+	instanceVariableNames: ''!
+
+!Portfolio class methodsFor: 'error' stamp: 'asd 14/Oct/2026, 1:02:17 am (UTC)'!
+!methodProperties: {}!
+notAccountError
+
+	^'El account solicitado no pertenece a este portfolio.'! !
+
+
 !classDefinition: #ReceptiveAccount category: #'Portfolio-Ejercicio'!
 Object subclass: #ReceptiveAccount
 	instanceVariableNames: 'transactions'
@@ -239,4 +305,118 @@ test07AccountKnowsItsTransactions
 		
 	self assert: 1 equals: account1 transactions size.
 	self assert: (account1 transactions includes: deposit1).
+! !
+
+!ReceptiveAccountTest methodsFor: 'tests' stamp: 'asd 13/Oct/2026, 11:25:39 pm (UTC)'!
+!methodProperties: {}!
+test08PortfolioHaveZeroAsBalanceWhenCreated 
+
+	| portfolio |
+	
+	portfolio := Portfolio new.
+	
+		
+	self assert: 0 equals: portfolio balance.
+! !
+
+!ReceptiveAccountTest methodsFor: 'tests' stamp: 'asd 14/Oct/2026, 12:17:53 am (UTC)'!
+!methodProperties: {}!
+test09PortfolioWithOneAccountWithDepositHaveBalanceEqualToAcountBalance
+
+	| portfolio account|
+	
+	account := ReceptiveAccount new.
+	Deposit register: 100 on: account.
+	portfolio := Portfolio new initializeWith: {account}.
+	
+	self assert: account balance equals: portfolio balance.
+! !
+
+!ReceptiveAccountTest methodsFor: 'tests' stamp: 'asd 14/Oct/2026, 12:23:27 am (UTC)'!
+!methodProperties: {}!
+test10PortfolioHaveNoRepetitiveAccounts
+
+	| portfolio account account2 accountsBalance |
+	
+	account := ReceptiveAccount new.
+	Deposit register: 100 on: account.
+	account2 := ReceptiveAccount new.
+	Deposit register: 100 on: account2.
+	Withdraw register: 50 on: account2.
+	portfolio := Portfolio new initializeWith: {account. account2. account }.
+	
+	accountsBalance := (account balance + account2 balance).
+	
+	self assert: accountsBalance equals: portfolio balance.
+! !
+
+!ReceptiveAccountTest methodsFor: 'tests' stamp: 'asd 14/Oct/2026, 12:24:54 am (UTC)'!
+!methodProperties: {}!
+test11PortfolioWithTwoAccountsWithDepositHaveBalanceEqualToSumAcountsBalance
+
+	| portfolio account account2 accountsBalance |
+	
+	account := ReceptiveAccount new.
+	Deposit register: 100 on: account.
+	account2 := ReceptiveAccount new.
+	Deposit register: 100 on: account2.
+	Withdraw register: 50 on: account2.
+	portfolio := Portfolio new initializeWith: {account. account2 }.
+	
+	accountsBalance := (account balance + account2 balance).
+	
+	self assert: accountsBalance equals: portfolio balance.
+! !
+
+!ReceptiveAccountTest methodsFor: 'tests' stamp: 'asd 14/Oct/2026, 12:31:16 am (UTC)'!
+!methodProperties: {}!
+test12PortfolioWithTwoAccountsHaveRegisteredATransaction
+
+	| portfolio account account2 deposit |
+	
+	account := ReceptiveAccount new.
+	deposit := Deposit register: 100 on: account.
+	account2 := ReceptiveAccount new.
+	Deposit register: 100 on: account2.
+	Withdraw register: 50 on: account2.
+	portfolio := Portfolio new initializeWith: {account. account2 }.
+	
+	self assert: (account hasRegistered: deposit).
+	self assert: (portfolio hasRegistered: deposit).
+
+! !
+
+!ReceptiveAccountTest methodsFor: 'tests' stamp: 'asd 14/Oct/2026, 1:02:56 am (UTC)'!
+!methodProperties: {}!
+test13PortfolioWithTwoAccountsReturnTheSecondOneTransactions
+
+	| portfolio account account2 deposit withdraw |
+	
+	account := ReceptiveAccount new.
+	Deposit register: 100 on: account.
+	account2 := ReceptiveAccount new.
+	deposit := Deposit register: 100 on: account2.
+	withdraw := Withdraw register: 50 on: account2.
+	portfolio := Portfolio new initializeWith: {account. account2 }.
+	
+	self assert: account2 transactions equals: (portfolio transactionsOf: account2).
+! !
+
+!ReceptiveAccountTest methodsFor: 'tests' stamp: 'asd 14/Oct/2026, 1:00:56 am (UTC)'!
+!methodProperties: {}!
+test14PortfolioReturnTransactionsOfItsOwnAccounts
+
+	| portfolio account account2 deposit withdraw |
+	
+	account := ReceptiveAccount new.
+	Deposit register: 100 on: account.
+	account2 := ReceptiveAccount new.
+	deposit := Deposit register: 100 on: account2.
+	withdraw := Withdraw register: 50 on: account2.
+	portfolio := Portfolio new initializeWith: {account}.
+	
+	self should: [portfolio transactionsOf: account2]
+	raise: Error 
+	withExceptionDo: [ :error | error messageText = Portfolio notAccountError.].
+
 ! !
