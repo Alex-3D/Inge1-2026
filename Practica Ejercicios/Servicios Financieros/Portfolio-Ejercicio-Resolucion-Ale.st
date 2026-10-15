@@ -134,7 +134,7 @@ initializeWith: accounts
 	]! !
 
 
-!Portfolio methodsFor: 'test' stamp: 'asd 14/Oct/2026, 12:37:50 am (UTC)'!
+!Portfolio methodsFor: 'testing' stamp: 'asd 14/Oct/2026, 12:37:50 am (UTC)'!
 !methodProperties: {}!
 hasRegistered: aTransaction 
 	|result|
@@ -147,12 +147,50 @@ hasRegistered: aTransaction
 	^result .! !
 
 
-!Portfolio methodsFor: 'cambiame' stamp: 'asd 14/Oct/2026, 12:56:20 am (UTC)'!
+!Portfolio methodsFor: 'transactions' stamp: 'asd 15/Oct/2026, 12:19:26 am (UTC)'!
+!methodProperties: {}!
+transactions
+
+	|allTransactions|
+	
+	allTransactions := OrderedCollection new.
+	accountSet do: [
+		:anAccount | 
+		anAccount transactions ifNotEmpty: [allTransactions addAllLast: anAccount transactions]. 
+	].
+
+	^allTransactions.
+	! !
+
+!Portfolio methodsFor: 'transactions' stamp: 'asd 15/Oct/2026, 12:46:54 am (UTC)'!
 !methodProperties: {}!
 transactionsOf: anAccount
 	
-	(accountSet select: [:ortherAccount | ortherAccount = anAccount ])  ifNotEmpty: [^anAccount transactions.] ifEmpty: [^ self error: self notAccountError.].
+	(accountSet select: [:account| account knowThisAccount: anAccount ])  ifNotEmpty: [^anAccount transactions.] ifEmpty: [^ self error: Portfolio notAccountError.].
+	
+	"(self transactions select: [:ortherAccount | ortherAccount = anAccount ])  ifNotEmpty: [^anAccount transactions.] ifEmpty: [^ self error: Portfolio notAccountError.]."
 	! !
+
+
+!Portfolio methodsFor: 'accounts' stamp: 'asd 15/Oct/2026, 12:18:10 am (UTC)'!
+!methodProperties: {}!
+accounts
+
+	|allAccounts|
+	
+	allAccounts := OrderedCollection new.
+	accountSet do: [
+		:anAccount | 
+		anAccount ifNotEmpty: [allAccounts addAllLast: anAccount transactions]. 
+	].
+
+	^allAccounts.! !
+
+!Portfolio methodsFor: 'accounts' stamp: 'asd 15/Oct/2026, 12:43:41 am (UTC)'!
+!methodProperties: {}!
+knowThisAccount: anAccount
+
+	(accountSet select: [:ortherAccount | ortherAccount knowThisAccount: anAccount ])  ifNotEmpty: [^true.] ifEmpty: [^false.].! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -208,6 +246,12 @@ hasRegistered: aTransaction
 
 	^ transactions includes: aTransaction 
 ! !
+
+!ReceptiveAccount methodsFor: 'testing' stamp: 'asd 15/Oct/2026, 12:44:41 am (UTC)'!
+!methodProperties: {}!
+knowThisAccount: anAccount 
+
+	^(self = anAccount ).! !
 
 
 !classDefinition: #ReceptiveAccountTest category: #'Portfolio-Ejercicio'!
@@ -419,4 +463,55 @@ test14PortfolioReturnTransactionsOfItsOwnAccounts
 	raise: Error 
 	withExceptionDo: [ :error | error messageText = Portfolio notAccountError.].
 
+! !
+
+!ReceptiveAccountTest methodsFor: 'tests' stamp: 'asd 14/Oct/2026, 10:54:42 pm (UTC)'!
+!methodProperties: {}!
+test15PortfolioWithOnePortfolioWhitAccountWithDepositHaveBalanceEqualToPortfolioAcountBalance
+
+	| portfolio account portfolio2 |
+	
+	account := ReceptiveAccount new.
+	Deposit register: 100 on: account.
+	portfolio := Portfolio new initializeWith: {account}.
+	portfolio2 := Portfolio new initializeWith: {portfolio}.
+	
+	self assert: portfolio2 balance equals: portfolio balance.
+! !
+
+!ReceptiveAccountTest methodsFor: 'tests' stamp: 'asd 14/Oct/2026, 11:04:14 pm (UTC)'!
+!methodProperties: {}!
+test16PortfolioWithOnePortfolioWhitAccountWithDepositAndAnAccountHaveBalanceEqualToAllAcountBalanceSum
+
+	| portfolio account portfolio2 account2 resultBalance |
+	
+	account := ReceptiveAccount new.
+	Deposit register: 100 on: account.
+	portfolio := Portfolio new initializeWith: {account}.
+	account2 := ReceptiveAccount new.
+	Deposit register: 200 on: account2.
+	Withdraw register: 150 on: account2.
+	portfolio2 := Portfolio new initializeWith: {portfolio. account2 }.
+	resultBalance := portfolio balance + account2 balance.
+	
+	self assert: resultBalance equals: portfolio2 balance.
+! !
+
+!ReceptiveAccountTest methodsFor: 'tests' stamp: 'asd 14/Oct/2026, 11:18:29 pm (UTC)'!
+!methodProperties: {}!
+test17PortfolioWithPortfolioAndAccountsReturnTheSecondOneTransactions
+
+	| portfolio account account2 deposit withdraw account3 portfolio2 |
+	
+	account := ReceptiveAccount new.
+	Deposit register: 100 on: account.
+	account2 := ReceptiveAccount new.
+	deposit := Deposit register: 100 on: account2.
+	withdraw := Withdraw register: 50 on: account2.
+	portfolio := Portfolio new initializeWith: {account. account2 }.
+	account3 := ReceptiveAccount new.
+	Deposit register: 150 on: account3.
+	portfolio2 := Portfolio new initializeWith: {portfolio. account3}.
+	
+	self assert: account2 transactions equals: (portfolio2 transactionsOf: account2).
 ! !
