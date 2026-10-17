@@ -103,58 +103,64 @@ for: aValue
 
 !classDefinition: #Portfolio category: #'Portfolio-Ejercicio'!
 Object subclass: #Portfolio
-	instanceVariableNames: 'accountSet'
+	instanceVariableNames: 'accountAndPortfoliosSet'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Portfolio-Ejercicio'!
 
-!Portfolio methodsFor: 'balance' stamp: 'asd 14/Oct/2026, 12:21:22 am (UTC)'!
+!Portfolio methodsFor: 'balance' stamp: 'asd 16/Oct/2026, 5:28:11 pm (UTC)'!
 !methodProperties: {}!
 balance
-	(accountSet isEmptyOrNil) ifFalse: [
-		^accountSet sum: [
+	(accountAndPortfoliosSet isEmptyOrNil) ifFalse: [
+		^accountAndPortfoliosSet sum: [
 			:anAccount|
 			anAccount balance.
 		].
 	] ifTrue:[^0].! !
 
 
-!Portfolio methodsFor: 'initialization' stamp: 'asd 14/Oct/2026, 12:18:50 am (UTC)'!
+!Portfolio methodsFor: 'initialization' stamp: 'asd 16/Oct/2026, 5:28:11 pm (UTC)'!
 !methodProperties: {}!
 initialize
 
-	accountSet := Set new.! !
+	accountAndPortfoliosSet := Set new.! !
 
-!Portfolio methodsFor: 'initialization' stamp: 'asd 14/Oct/2026, 12:20:16 am (UTC)'!
+!Portfolio methodsFor: 'initialization' stamp: 'asd 16/Oct/2026, 6:22:07 pm (UTC)'!
 !methodProperties: {}!
-initializeWith: accounts
+initializeWith: accountsAndPortfolios
 	
-	accounts do: [:anAccount|
-		accountSet add: anAccount.	
+	accountsAndPortfolios do: [:anAccountOrAPortfolio|
+		self addNoDuplicate: anAccountOrAPortfolio.	
 	]! !
 
 
-!Portfolio methodsFor: 'testing' stamp: 'asd 14/Oct/2026, 12:37:50 am (UTC)'!
+!Portfolio methodsFor: 'testing' stamp: 'asd 16/Oct/2026, 5:28:11 pm (UTC)'!
 !methodProperties: {}!
 hasRegistered: aTransaction 
 	|result|
 	
 	result := false.
-	accountSet do: [
+	accountAndPortfoliosSet do: [
 		:anAccount| 
 		result := result or: [anAccount hasRegistered: aTransaction]. 
 	].
 	^result .! !
 
+!Portfolio methodsFor: 'testing' stamp: 'asd 17/Oct/2026, 12:34:53 am (UTC)'!
+!methodProperties: {}!
+knowThisAccountOrPortfolio: anAccountOrPortfolio
 
-!Portfolio methodsFor: 'transactions' stamp: 'asd 15/Oct/2026, 12:19:26 am (UTC)'!
+	^self knowThisAccount: anAccountOrPortfolio.! !
+
+
+!Portfolio methodsFor: 'transactions' stamp: 'asd 16/Oct/2026, 5:28:11 pm (UTC)'!
 !methodProperties: {}!
 transactions
 
 	|allTransactions|
 	
 	allTransactions := OrderedCollection new.
-	accountSet do: [
+	accountAndPortfoliosSet do: [
 		:anAccount | 
 		anAccount transactions ifNotEmpty: [allTransactions addAllLast: anAccount transactions]. 
 	].
@@ -162,35 +168,61 @@ transactions
 	^allTransactions.
 	! !
 
-!Portfolio methodsFor: 'transactions' stamp: 'asd 15/Oct/2026, 12:46:54 am (UTC)'!
+!Portfolio methodsFor: 'transactions' stamp: 'asd 16/Oct/2026, 5:28:11 pm (UTC)'!
 !methodProperties: {}!
 transactionsOf: anAccount
 	
-	(accountSet select: [:account| account knowThisAccount: anAccount ])  ifNotEmpty: [^anAccount transactions.] ifEmpty: [^ self error: Portfolio notAccountError.].
+	(accountAndPortfoliosSet select: [:account| account knowThisAccount: anAccount ])  ifNotEmpty: [^anAccount transactions.] ifEmpty: [^ self error: Portfolio notAccountError.].
 	
 	"(self transactions select: [:ortherAccount | ortherAccount = anAccount ])  ifNotEmpty: [^anAccount transactions.] ifEmpty: [^ self error: Portfolio notAccountError.]."
 	! !
 
 
-!Portfolio methodsFor: 'accounts' stamp: 'asd 15/Oct/2026, 12:18:10 am (UTC)'!
+!Portfolio methodsFor: 'accounts' stamp: 'asd 17/Oct/2026, 12:16:33 am (UTC)'!
 !methodProperties: {}!
 accounts
 
 	|allAccounts|
 	
 	allAccounts := OrderedCollection new.
-	accountSet do: [
+	accountAndPortfoliosSet do: [
 		:anAccount | 
 		anAccount ifNotEmpty: [allAccounts addAllLast: anAccount transactions]. 
 	].
 
 	^allAccounts.! !
 
-!Portfolio methodsFor: 'accounts' stamp: 'asd 15/Oct/2026, 12:43:41 am (UTC)'!
+!Portfolio methodsFor: 'accounts' stamp: 'asd 17/Oct/2026, 12:39:19 am (UTC)'!
 !methodProperties: {}!
-knowThisAccount: anAccount
+knowThisAccount: anAccountOrPortfolio
 
-	(accountSet select: [:ortherAccount | ortherAccount knowThisAccount: anAccount ])  ifNotEmpty: [^true.] ifEmpty: [^false.].! !
+	(accountAndPortfoliosSet select: [:ortherAccountOrPortfolio | ortherAccountOrPortfolio knowThisAccountOrPortfolio: anAccountOrPortfolio ])  ifNotEmpty: [^true.] ifEmpty: [^false.].! !
+
+
+!Portfolio methodsFor: 'private' stamp: 'asd 16/Oct/2026, 6:32:31 pm (UTC)'!
+!methodProperties: {}!
+addNoDuplicate: anAccountOrAPortfolio
+
+	(self checkNoDuplicateAccountAndNotSelf: anAccountOrAPortfolio) ifTrue: [accountAndPortfoliosSet add: anAccountOrAPortfolio.].	
+	! !
+
+!Portfolio methodsFor: 'private' stamp: 'asd 16/Oct/2026, 6:18:43 pm (UTC)'!
+!methodProperties: {}!
+checkNoDuplicateAccount: anAccountOrAPortfolio
+
+	^ (accountAndPortfoliosSet select: [:accountOrPortfolioInSet | accountOrPortfolioInSet knowThisAccount: anAccountOrAPortfolio]) isEmpty! !
+
+!Portfolio methodsFor: 'private' stamp: 'asd 16/Oct/2026, 6:32:31 pm (UTC)'!
+!methodProperties: {}!
+checkNoDuplicateAccountAndNotSelf: anAccountOrAPortfolio
+
+	^ (self checkNoDuplicateAccount: anAccountOrAPortfolio) and: (self checkNoSelf: anAccountOrAPortfolio )! !
+
+!Portfolio methodsFor: 'private' stamp: 'asd 16/Oct/2026, 6:27:17 pm (UTC)'!
+!methodProperties: {}!
+checkNoSelf: anAccountOrAPortfolio
+
+	^ (self = anAccountOrAPortfolio ) not.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -252,6 +284,12 @@ hasRegistered: aTransaction
 knowThisAccount: anAccount 
 
 	^(self = anAccount ).! !
+
+!ReceptiveAccount methodsFor: 'testing' stamp: 'asd 17/Oct/2026, 12:32:40 am (UTC)'!
+!methodProperties: {}!
+knowThisAccountOrPortfolio: anAccountOrPortfolio
+
+	^anAccountOrPortfolio knowThisAccount: self.! !
 
 
 !classDefinition: #ReceptiveAccountTest category: #'Portfolio-Ejercicio'!
@@ -514,4 +552,59 @@ test17PortfolioWithPortfolioAndAccountsReturnTheSecondOneTransactions
 	portfolio2 := Portfolio new initializeWith: {portfolio. account3}.
 	
 	self assert: account2 transactions equals: (portfolio2 transactionsOf: account2).
+! !
+
+!ReceptiveAccountTest methodsFor: 'tests' stamp: 'asd 16/Oct/2026, 5:16:24 pm (UTC)'!
+!methodProperties: {}!
+test18PortfolioHaveNotRepetitivePortfolio
+
+	| portfolio account portfolio2 account2 resultBalance |
+	
+	account := ReceptiveAccount new.
+	Deposit register: 100 on: account.
+	portfolio := Portfolio new initializeWith: {account}.
+	account2 := ReceptiveAccount new.
+	Deposit register: 200 on: account2.
+	Withdraw register: 150 on: account2.
+	portfolio2 := Portfolio new initializeWith: {portfolio. account2. portfolio }.
+	resultBalance := portfolio balance + account2 balance.
+	
+	self assert: resultBalance equals: portfolio2 balance.
+! !
+
+!ReceptiveAccountTest methodsFor: 'tests' stamp: 'asd 16/Oct/2026, 11:56:49 pm (UTC)'!
+!methodProperties: {}!
+test19PortfolioHaveNotRepetitiveAccountInDiferentPortfolios
+
+	| portfolio account portfolio2 account2 resultBalance |
+	
+	account := ReceptiveAccount new.
+	Deposit register: 100 on: account.
+	portfolio := Portfolio new initializeWith: {account}.
+	account2 := ReceptiveAccount new.
+	Deposit register: 200 on: account2.
+	Withdraw register: 150 on: account2.
+	portfolio2 := Portfolio new initializeWith: {portfolio. account2. account }.
+	resultBalance := portfolio balance + account2 balance.
+	
+	self assert: resultBalance equals: portfolio2 balance.
+! !
+
+!ReceptiveAccountTest methodsFor: 'tests' stamp: 'asd 17/Oct/2026, 1:23:00 am (UTC)'!
+!methodProperties: {}!
+test20PortfolioHaveNotDuplicateAccountInPortfolios
+
+	| portfolio account portfolio2 account2 resultBalance portfolio3 |
+	
+	account := ReceptiveAccount new.
+	Deposit register: 100 on: account.
+	portfolio := Portfolio new initializeWith: {account}.
+	account2 := ReceptiveAccount new.
+	Deposit register: 200 on: account2.
+	Withdraw register: 150 on: account2.
+	portfolio2 := Portfolio new initializeWith: {portfolio. account2. account }.
+	portfolio3 := Portfolio new initializeWith: {portfolio. account2. portfolio2 }.
+	resultBalance := portfolio balance + account2 balance.
+	
+	self assert: resultBalance equals: portfolio3 balance.
 ! !
