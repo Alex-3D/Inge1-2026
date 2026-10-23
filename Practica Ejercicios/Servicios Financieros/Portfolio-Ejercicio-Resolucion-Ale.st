@@ -101,9 +101,60 @@ for: aValue
 	^ self new initializeFor: aValue ! !
 
 
+!classDefinition: #ReceptiveAlgo category: #'Portfolio-Ejercicio'!
+Object subclass: #ReceptiveAlgo
+	instanceVariableNames: 'owner'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Portfolio-Ejercicio'!
+!ReceptiveAlgo commentStamp: '<historical>' prior: 0!
+Ni la mas palida idea que nombre ponerle aun...!
+
+
+
+!ReceptiveAlgo methodsFor: 'balance' stamp: 'asd 23/Oct/2026, 6:23:16 pm (UTC)'!
+!methodProperties: {}!
+balance
+
+	self subclassResponsibility.! !
+
+
+!ReceptiveAlgo methodsFor: 'testing' stamp: 'asd 23/Oct/2026, 6:38:23 pm (UTC)'!
+!methodProperties: {}!
+checkNoDuplicateAccountHierarchy: anAccountOrAPortfolio calledBy: aCallerAccountOrPortfolio
+
+	^owner checkNoDuplicateAccountHierarchy: anAccountOrAPortfolio calledBy: self.! !
+
+!ReceptiveAlgo methodsFor: 'testing' stamp: 'asd 23/Oct/2026, 6:25:13 pm (UTC)'!
+!methodProperties: {}!
+hasRegistered: aTransaction
+
+	self subclassResponsibility.
+! !
+
+!ReceptiveAlgo methodsFor: 'testing' stamp: 'asd 23/Oct/2026, 6:26:34 pm (UTC)'!
+!methodProperties: {}!
+knowThisAccount: anAccount 
+
+	self subclassResponsibility.! !
+
+!ReceptiveAlgo methodsFor: 'testing' stamp: 'asd 23/Oct/2026, 6:26:45 pm (UTC)'!
+!methodProperties: {}!
+knowThisAccountOrPortfolio: anAccountOrPortfolio
+
+	self subclassResponsibility.! !
+
+
+!ReceptiveAlgo methodsFor: 'actions' stamp: 'asd 23/Oct/2026, 6:20:50 pm (UTC)'!
+!methodProperties: {}!
+setOwner: anOwner 
+	
+	owner := anOwner.! !
+
+
 !classDefinition: #ReceptiveAccount category: #'Portfolio-Ejercicio'!
-Object subclass: #ReceptiveAccount
-	instanceVariableNames: 'transactions owner'
+ReceptiveAlgo subclass: #ReceptiveAccount
+	instanceVariableNames: 'transactions'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Portfolio-Ejercicio'!
@@ -137,12 +188,6 @@ balance
 	^transactions sum: [ :aTransaction | aTransaction valueForBalance ] ifEmpty: [ 0 ]! !
 
 
-!ReceptiveAccount methodsFor: 'testing' stamp: 'Alejandro Pontalti 23/Oct/2026, 1:11:10 am (UTC)'!
-!methodProperties: {}!
-checkNoDuplicateAccountHierarchy: anAccountOrAPortfolio calledBy: aCallerAccountOrPortfolio
-
-	owner checkNoDuplicateAccountHierarchy: anAccountOrAPortfolio calledBy: self.! !
-
 !ReceptiveAccount methodsFor: 'testing' stamp: 'NR 17/Oct/2019, 6:28:43 am (UTC)'!
 !methodProperties: {}!
 hasRegistered: aTransaction
@@ -163,27 +208,21 @@ knowThisAccountOrPortfolio: anAccountOrPortfolio
 	^anAccountOrPortfolio knowThisAccount: self.! !
 
 
-!ReceptiveAccount methodsFor: 'actions' stamp: 'Alejandro Pontalti 23/Oct/2026, 1:30:41 am (UTC)'!
-!methodProperties: {}!
-setOwner: anOwner 
-	
-	owner := anOwner.! !
-
 
 !classDefinition: #ReceptivePortfolio category: #'Portfolio-Ejercicio'!
-Object subclass: #ReceptivePortfolio
-	instanceVariableNames: 'accountAndPortfoliosSet owner'
+ReceptiveAlgo subclass: #ReceptivePortfolio
+	instanceVariableNames: 'accountAndPortfoliosSet'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Portfolio-Ejercicio'!
 
-!ReceptivePortfolio methodsFor: 'balance' stamp: 'asd 16/Oct/2026, 5:28:11 pm (UTC)'!
+!ReceptivePortfolio methodsFor: 'balance' stamp: 'asd 23/Oct/2026, 6:29:44 pm (UTC)'!
 !methodProperties: {}!
 balance
 	(accountAndPortfoliosSet isEmptyOrNil) ifFalse: [
 		^accountAndPortfoliosSet sum: [
-			:anAccount|
-			anAccount balance.
+			:anAccountOrPortfolio|
+			anAccountOrPortfolio balance.
 		].
 	] ifTrue:[^0].! !
 
@@ -203,12 +242,6 @@ initializeWith: accountsAndPortfolios
 		self addNewNoDuplicate: anAccountOrAPortfolio.	
 	]! !
 
-
-!ReceptivePortfolio methodsFor: 'testing' stamp: 'Alejandro Pontalti 23/Oct/2026, 1:31:34 am (UTC)'!
-!methodProperties: {}!
-checkNoDuplicateAccountHierarchy: anAccountOrAPortfolio calledBy: aCallerAccountOrPortfolio
-
-	^owner checkNoDuplicateAccountHierarchy: anAccountOrAPortfolio calledBy: self.! !
 
 !ReceptivePortfolio methodsFor: 'testing' stamp: 'asd 16/Oct/2026, 5:28:11 pm (UTC)'!
 !methodProperties: {}!
@@ -244,29 +277,13 @@ transactions
 	^allTransactions.
 	! !
 
-!ReceptivePortfolio methodsFor: 'transactions' stamp: 'Alejandro Pontalti 23/Oct/2026, 1:38:55 am (UTC)'!
+!ReceptivePortfolio methodsFor: 'transactions' stamp: 'asd 23/Oct/2026, 6:32:37 pm (UTC)'!
 !methodProperties: {}!
 transactionsOf: anAccount
 	
 	(accountAndPortfoliosSet select: [:account| account knowThisAccount: anAccount ])  ifNotEmpty: [^anAccount transactions.] ifEmpty: [^ self error: ReceptivePortfolio notAccountError.].
-	
-	"(self transactions select: [:ortherAccount | ortherAccount = anAccount ])  ifNotEmpty: [^anAccount transactions.] ifEmpty: [^ self error: Portfolio notAccountError.]."
-	! !
+! !
 
-
-!ReceptivePortfolio methodsFor: 'accounts' stamp: 'asd 17/Oct/2026, 12:16:33 am (UTC)'!
-!methodProperties: {}!
-accounts
-
-	|allAccounts|
-	
-	allAccounts := OrderedCollection new.
-	accountAndPortfoliosSet do: [
-		:anAccount | 
-		anAccount ifNotEmpty: [allAccounts addAllLast: anAccount transactions]. 
-	].
-
-	^allAccounts.! !
 
 !ReceptivePortfolio methodsFor: 'accounts' stamp: 'Alejandro Pontalti 23/Oct/2026, 1:01:52 am (UTC)'!
 !methodProperties: {}!
@@ -324,12 +341,6 @@ addAccountOrPortfolio: anAccountOrPortfolio
 	
 	self addNoDuplicate: anAccountOrPortfolio.! !
 
-!ReceptivePortfolio methodsFor: 'actions' stamp: 'Alejandro Pontalti 23/Oct/2026, 1:23:23 am (UTC)'!
-!methodProperties: {}!
-setOwner: anOwner
-
-	owner := anOwner.! !
-
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'ReceptivePortfolio class' category: #'Portfolio-Ejercicio'!
@@ -344,7 +355,7 @@ notAccountError
 
 
 !classDefinition: #ReceptiveTop category: #'Portfolio-Ejercicio'!
-Object subclass: #ReceptiveTop
+ReceptiveAlgo subclass: #ReceptiveTop
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -355,6 +366,50 @@ Object subclass: #ReceptiveTop
 checkNoDuplicateAccountHierarchy: anAccountOrAPortfolio calledBy: aCallerAccountOrPortfolio
 
 	^aCallerAccountOrPortfolio checkNoDuplicateAccountAndNotSelf: anAccountOrAPortfolio.! !
+
+!ReceptiveTop methodsFor: 'testing' stamp: 'asd 23/Oct/2026, 6:48:05 pm (UTC)'!
+!methodProperties: {}!
+hasRegistered: aTransaction
+
+	^self error: ReceptiveTop receptiveTopError .! !
+
+!ReceptiveTop methodsFor: 'testing' stamp: 'asd 23/Oct/2026, 6:48:50 pm (UTC)'!
+!methodProperties: {}!
+knowThisAccount: anAccount
+
+	^self error: ReceptiveTop receptiveTopError .! !
+
+!ReceptiveTop methodsFor: 'testing' stamp: 'asd 23/Oct/2026, 6:48:36 pm (UTC)'!
+!methodProperties: {}!
+knowThisAccountOrPortfolio: anAccountOrPortfolio
+
+	^self error: ReceptiveTop receptiveTopError .! !
+
+
+!ReceptiveTop methodsFor: 'actions' stamp: 'asd 23/Oct/2026, 6:49:48 pm (UTC)'!
+!methodProperties: {}!
+setOwner: anOwner 
+	
+	^self error: ReceptiveTop receptiveTopError .! !
+
+
+!ReceptiveTop methodsFor: 'balance' stamp: 'asd 23/Oct/2026, 6:46:18 pm (UTC)'!
+!methodProperties: {}!
+balance
+
+	^self error: ReceptiveTop receptiveTopError.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'ReceptiveTop class' category: #'Portfolio-Ejercicio'!
+ReceptiveTop class
+	instanceVariableNames: ''!
+
+!ReceptiveTop class methodsFor: 'error' stamp: 'asd 23/Oct/2026, 6:45:11 pm (UTC)'!
+!methodProperties: {}!
+receptiveTopError
+
+	^'An ReceptiveTop Cant do that'.! !
 
 
 !classDefinition: #ReceptiveAccountTest category: #'Portfolio-Ejercicio'!
@@ -784,3 +839,11 @@ test25PortfolioHavePortfoliosAndAccountsCantAddDuplecateAccount
 	
 	self assert: resultBalance equals: portfolio2 balance.
 ! !
+
+
+!classDefinition: #TransferenceTest category: #'Portfolio-Ejercicio'!
+TestCase subclass: #TransferenceTest
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Portfolio-Ejercicio'!
