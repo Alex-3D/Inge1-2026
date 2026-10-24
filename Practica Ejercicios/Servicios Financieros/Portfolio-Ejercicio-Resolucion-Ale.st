@@ -103,13 +103,12 @@ for: aValue
 
 !classDefinition: #ReceptiveAlgo category: #'Portfolio-Ejercicio'!
 Object subclass: #ReceptiveAlgo
-	instanceVariableNames: 'owner'
+	instanceVariableNames: 'owners'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Portfolio-Ejercicio'!
 !ReceptiveAlgo commentStamp: '<historical>' prior: 0!
 Ni la mas palida idea que nombre ponerle aun...!
-
 
 
 !ReceptiveAlgo methodsFor: 'balance' stamp: 'asd 23/Oct/2026, 6:23:16 pm (UTC)'!
@@ -119,11 +118,21 @@ balance
 	self subclassResponsibility.! !
 
 
-!ReceptiveAlgo methodsFor: 'testing' stamp: 'asd 23/Oct/2026, 6:38:23 pm (UTC)'!
+!ReceptiveAlgo methodsFor: 'testing' stamp: 'asd 24/Oct/2026, 1:28:39 am (UTC)'!
 !methodProperties: {}!
 checkNoDuplicateAccountHierarchy: anAccountOrAPortfolio calledBy: aCallerAccountOrPortfolio
-
-	^owner checkNoDuplicateAccountHierarchy: anAccountOrAPortfolio calledBy: self.! !
+	| result |
+	
+	result := true.
+	owners ifEmpty: [^self checkNoDuplicateAccountAndNotSelf: anAccountOrAPortfolio.] ifNotEmpty: [
+		owners do: [
+			:anOwner|
+			result := result and: (anOwner checkNoDuplicateAccountHierarchy: anAccountOrAPortfolio calledBy: aCallerAccountOrPortfolio).
+		].
+		^result.
+	]
+	
+	"^owners checkNoDuplicateAccountHierarchy: anAccountOrAPortfolio calledBy: self."! !
 
 !ReceptiveAlgo methodsFor: 'testing' stamp: 'asd 23/Oct/2026, 6:25:13 pm (UTC)'!
 !methodProperties: {}!
@@ -145,11 +154,11 @@ knowThisAccountOrPortfolio: anAccountOrPortfolio
 	self subclassResponsibility.! !
 
 
-!ReceptiveAlgo methodsFor: 'actions' stamp: 'asd 23/Oct/2026, 6:20:50 pm (UTC)'!
+!ReceptiveAlgo methodsFor: 'actions' stamp: 'asd 24/Oct/2026, 12:24:46 am (UTC)'!
 !methodProperties: {}!
-setOwner: anOwner 
+addOwner: anOwner 
 	
-	owner := anOwner.! !
+	owners add: anOwner.! !
 
 
 !classDefinition: #ReceptiveAccount category: #'Portfolio-Ejercicio'!
@@ -159,12 +168,12 @@ ReceptiveAlgo subclass: #ReceptiveAccount
 	poolDictionaries: ''
 	category: 'Portfolio-Ejercicio'!
 
-!ReceptiveAccount methodsFor: 'initialization' stamp: 'Alejandro Pontalti 23/Oct/2026, 1:20:07 am (UTC)'!
+!ReceptiveAccount methodsFor: 'initialization' stamp: 'asd 24/Oct/2026, 12:18:12 am (UTC)'!
 !methodProperties: {}!
 initialize
 
 	transactions := OrderedCollection new.
-	owner := ReceptiveTop new.! !
+	owners := Set new.! !
 
 
 !ReceptiveAccount methodsFor: 'transactions' stamp: 'HernanWilkinson 13/Jul/2011, 9:37:00 pm (UTC)'!
@@ -207,7 +216,6 @@ knowThisAccountOrPortfolio: anAccountOrPortfolio
 
 	^anAccountOrPortfolio knowThisAccount: self.! !
 
-
 
 !classDefinition: #ReceptivePortfolio category: #'Portfolio-Ejercicio'!
 ReceptiveAlgo subclass: #ReceptivePortfolio
@@ -227,12 +235,12 @@ balance
 	] ifTrue:[^0].! !
 
 
-!ReceptivePortfolio methodsFor: 'initialization' stamp: 'Alejandro Pontalti 23/Oct/2026, 1:19:50 am (UTC)'!
+!ReceptivePortfolio methodsFor: 'initialization' stamp: 'asd 24/Oct/2026, 12:17:15 am (UTC)'!
 !methodProperties: {}!
 initialize
 
 	accountAndPortfoliosSet := Set new.
-	owner := ReceptiveTop new.! !
+	owners := Set new.! !
 
 !ReceptivePortfolio methodsFor: 'initialization' stamp: 'Alejandro Pontalti 23/Oct/2026, 1:18:42 am (UTC)'!
 !methodProperties: {}!
@@ -325,11 +333,11 @@ checkNoSelf: anAccountOrAPortfolio
 
 	^ (self = anAccountOrAPortfolio ) not.! !
 
-!ReceptivePortfolio methodsFor: 'private' stamp: 'Alejandro Pontalti 23/Oct/2026, 1:22:51 am (UTC)'!
+!ReceptivePortfolio methodsFor: 'private' stamp: 'asd 24/Oct/2026, 12:23:41 am (UTC)'!
 !methodProperties: {}!
 setOwnerAndAddAccountOrAPortfolio: anAccountOrAPortfolio
 
-	anAccountOrAPortfolio setOwner: self.
+	anAccountOrAPortfolio addOwner: self.
 	accountAndPortfoliosSet add: anAccountOrAPortfolio.
 	
 	! !
@@ -386,9 +394,9 @@ knowThisAccountOrPortfolio: anAccountOrPortfolio
 	^self error: ReceptiveTop receptiveTopError .! !
 
 
-!ReceptiveTop methodsFor: 'actions' stamp: 'asd 23/Oct/2026, 6:49:48 pm (UTC)'!
+!ReceptiveTop methodsFor: 'actions' stamp: 'asd 24/Oct/2026, 12:23:41 am (UTC)'!
 !methodProperties: {}!
-setOwner: anOwner 
+addOwner: anOwner 
 	
 	^self error: ReceptiveTop receptiveTopError .! !
 
@@ -838,6 +846,35 @@ test25PortfolioHavePortfoliosAndAccountsCantAddDuplecateAccount
 	resultBalance := portfolio balance + account2 balance + account4 balance.
 	
 	self assert: resultBalance equals: portfolio2 balance.
+! !
+
+!ReceptiveAccountTest methodsFor: 'tests' stamp: 'asd 24/Oct/2026, 1:30:38 am (UTC)'!
+!methodProperties: {}!
+test26PortfolioWithTwoOwnersCantAddDuplicatedAccount
+
+	| portfolio account portfolio2 account2 resultBalance account3 account4 portfolio3 portfolio4 |
+	
+	account := ReceptiveAccount new.
+	Deposit register: 100 on: account.
+	portfolio := ReceptivePortfolio new initializeWith: {account}.
+	account2 := ReceptiveAccount new.
+	Deposit register: 200 on: account2.
+	Withdraw register: 150 on: account2.
+	portfolio2 := ReceptivePortfolio new initializeWith: {account2. portfolio }.
+	account3 := ReceptiveAccount new.
+	Deposit register: 175 on: account3.
+	portfolio3 := ReceptivePortfolio new.
+	account4 := ReceptiveAccount new.
+	Deposit register: 50 on: account4.
+	portfolio3 addAccountOrPortfolio: account4.
+	portfolio3 addAccountOrPortfolio: portfolio.
+	portfolio4 := ReceptivePortfolio new.
+	portfolio2 addAccountOrPortfolio: portfolio4.
+	portfolio4 addAccountOrPortfolio: account3.
+	portfolio addAccountOrPortfolio: portfolio4.
+	resultBalance := account balance.
+	
+	self assert: resultBalance equals: portfolio balance.
 ! !
 
 
