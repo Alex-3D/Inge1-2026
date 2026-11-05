@@ -5,37 +5,67 @@ Object subclass: #Pared
 	poolDictionaries: ''
 	category: '2025-1C-Parcial-2'!
 
-!Pared methodsFor: 'acciones' stamp: 'Alejandro pontalti 31/Oct/2026, 1:23:08 am (UTC)'!
+!Pared methodsFor: 'acciones' stamp: 'Alejandro pontalti 5/Nov/2026, 12:48:28 am (UTC)'!
 !methodProperties: {}!
 agregarPintura: unaPintura  
 	
-	((unaPintura posicion between: 0@0 and: extencion) and: (unaPintura totalExtencion between: 0@0 and: extencion)) ifFalse: [^self error: Pared pinturaFueraDeRangoError.].
-	pinturas isNil ifFalse: [
-		((unaPintura posicion = pinturas at:1 posicion ) and: (unaPintura totalExtencion = pinturas totalExtencion)) ifTrue: [^self error: Pared posicionOcupadaError. 
-			].
-		].
+	self pinturaAAgregarValida: unaPintura.
 	
 	pinturas add: unaPintura.! !
 
 
-!Pared methodsFor: 'access' stamp: 'Alejandro pontalti 30/Oct/2026, 11:47:04 pm (UTC)'!
+!Pared methodsFor: 'access' stamp: 'Alejandro pontalti 5/Nov/2026, 12:28:01 am (UTC)'!
 !methodProperties: {}!
 incluyePintura: unaPintura 
 	
-	^pinturas = unaPintura .! !
+	^(pinturas select: [:pintura | pintura = unaPintura ]) isEmpty not.! !
 
 
-!Pared methodsFor: 'initialize' stamp: 'Alejandro pontalti 31/Oct/2026, 12:12:29 am (UTC)'!
+!Pared methodsFor: 'initialize' stamp: 'Alejandro pontalti 5/Nov/2026, 12:12:48 am (UTC)'!
 !methodProperties: {}!
 inicializarConExtencion: unaExtencion 
 	
-	extencion := unaExtencion.! !
+	extencion := unaExtencion.
+	self initialize.
+	^self.! !
 
 !Pared methodsFor: 'initialize' stamp: 'Alejandro pontalti 31/Oct/2026, 1:02:50 am (UTC)'!
 !methodProperties: {}!
 initialize
 
 	pinturas := OrderedCollection new.! !
+
+!Pared methodsFor: 'initialize' stamp: 'Alejandro pontalti 5/Nov/2026, 12:14:36 am (UTC)'!
+!methodProperties: {}!
+initializeWith: unaExtencion 
+	
+	extencion := unaExtencion.! !
+
+
+!Pared methodsFor: 'validaciones' stamp: 'Alejandro pontalti 5/Nov/2026, 12:50:27 am (UTC)'!
+!methodProperties: {}!
+pinturaAAgregarNoSeSuperpone: unaPintura
+	
+	pinturas isEmpty ifFalse: [ 
+		pinturas do: [ :pintura |
+			((unaPintura posicion = pintura posicion ) and: (unaPintura totalExtencion = pintura totalExtencion)) ifTrue: [^self error: Pared posicionOcupadaError. 
+			].
+		].
+	].! !
+
+!Pared methodsFor: 'validaciones' stamp: 'Alejandro pontalti 5/Nov/2026, 12:50:48 am (UTC)'!
+!methodProperties: {}!
+pinturaAAgregarValida: unaPintura
+
+	self posicionAAgregarEnRango: unaPintura.
+	
+	self pinturaAAgregarNoSeSuperpone: unaPintura.! !
+
+!Pared methodsFor: 'validaciones' stamp: 'Alejandro pontalti 5/Nov/2026, 12:49:40 am (UTC)'!
+!methodProperties: {}!
+posicionAAgregarEnRango: unaPintura
+
+	((unaPintura posicion between: 0@0 and: extencion) and: (unaPintura totalExtencion between: 0@0 and: extencion)) ifFalse: [^self error: Pared pinturaFueraDeRangoError.].! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -111,13 +141,13 @@ TestCase subclass: #PintorTest
 	poolDictionaries: ''
 	category: '2025-1C-Parcial-2'!
 
-!PintorTest methodsFor: 'test' stamp: 'Alejandro pontalti 31/Oct/2026, 12:11:16 am (UTC)'!
+!PintorTest methodsFor: 'test' stamp: 'Alejandro pontalti 5/Nov/2026, 12:15:09 am (UTC)'!
 !methodProperties: {}!
 test001AgregarPinturaAParedEnPosicion
 
 	| unPintor unaPared unaPintura |
 	unPintor := Pintor new.
-	unaPared := Pared new inicializarConExtencion: 14@8.
+	unaPared := Pared new initializeWith: 14@8.
 	unaPintura := Pintura new inicializarEnPosicion: 10@5 conExtencion: 3@2.
 	
 	unPintor pintar: unaPintura enPared: unaPared.
@@ -126,13 +156,13 @@ test001AgregarPinturaAParedEnPosicion
 	
 	! !
 
-!PintorTest methodsFor: 'test' stamp: 'Alejandro pontalti 31/Oct/2026, 12:17:13 am (UTC)'!
+!PintorTest methodsFor: 'test' stamp: 'Alejandro pontalti 5/Nov/2026, 12:15:20 am (UTC)'!
 !methodProperties: {}!
 test002NoPuedeAgregarPinturaAParedEnPosicionFueraDeRango
 
 	| unPintor unaPared unaPintura |
 	unPintor := Pintor new.
-	unaPared := Pared new inicializarConExtencion: 12@6.
+	unaPared := Pared new initializeWith: 12@6.
 	unaPintura := Pintura new inicializarEnPosicion: 10@5 conExtencion: 3@2.
 	
 	self should: [unPintor pintar: unaPintura enPared: unaPared.]
@@ -143,13 +173,13 @@ test002NoPuedeAgregarPinturaAParedEnPosicionFueraDeRango
 	
 	! !
 
-!PintorTest methodsFor: 'test' stamp: 'Alejandro pontalti 31/Oct/2026, 12:38:17 am (UTC)'!
+!PintorTest methodsFor: 'test' stamp: 'Alejandro pontalti 5/Nov/2026, 12:15:48 am (UTC)'!
 !methodProperties: {}!
 test003NoPuedeAgregarPinturaAParedEnPosicionYExtencionYaOcupadas
 
 	| unPintor unaPared unaPintura otraPintura |
 	unPintor := Pintor new.
-	unaPared := Pared new inicializarConExtencion: 14@8.
+	unaPared := Pared new initializeWith: 14@8.
 	unaPintura := Pintura new inicializarEnPosicion: 10@5 conExtencion: 3@2.
 	unPintor pintar: unaPintura enPared: unaPared.
 	otraPintura := Pintura new inicializarEnPosicion: 10@5 conExtencion: 3@2.
@@ -160,5 +190,46 @@ test003NoPuedeAgregarPinturaAParedEnPosicionYExtencionYaOcupadas
 	
 	self assert: (unaPared incluyePintura: unaPintura).
 	self deny: (unaPared incluyePintura: otraPintura).
+	
+	! !
+
+!PintorTest methodsFor: 'test' stamp: 'Alejandro pontalti 5/Nov/2026, 12:31:34 am (UTC)'!
+!methodProperties: {}!
+test004puedeAgregarMasDeUnaPinturaEnParedEnPosicionesYExtencionesValidas
+
+	| unPintor unaPared unaPintura otraPintura |
+	unPintor := Pintor new.
+	unaPared := Pared new initializeWith: 14@8.
+	unaPintura := Pintura new inicializarEnPosicion: 10@5 conExtencion: 3@2.
+	unPintor pintar: unaPintura enPared: unaPared.
+	otraPintura := Pintura new inicializarEnPosicion: 8@2 conExtencion: 4@4.
+	
+	unPintor pintar: otraPintura enPared: unaPared.
+		
+	self assert: (unaPared incluyePintura: unaPintura).
+	self assert: (unaPared incluyePintura: otraPintura).
+	
+	! !
+
+!PintorTest methodsFor: 'test' stamp: 'Alejandro pontalti 5/Nov/2026, 12:46:43 am (UTC)'!
+!methodProperties: {}!
+test005noPuedeAgregarMasDeUnaPinturaEnParedEnPosicionesYExtencionesOcupadas
+
+	| unPintor unaPared unaPintura otraPintura unaPinturaMas |
+	unPintor := Pintor new.
+	unaPared := Pared new initializeWith: 14@8.
+	unaPintura := Pintura new inicializarEnPosicion: 10@5 conExtencion: 3@2.
+	unPintor pintar: unaPintura enPared: unaPared.
+	otraPintura := Pintura new inicializarEnPosicion: 8@2 conExtencion: 4@4.
+	unPintor pintar: otraPintura enPared: unaPared.
+	unaPinturaMas := Pintura new inicializarEnPosicion: 8@2 conExtencion: 4@4.
+	
+	self should: [unPintor pintar: unaPinturaMas enPared: unaPared.]
+	raise: Error 
+	withExceptionDo: [ :error | error messageText = Pared posicionOcupadaError.].
+		
+	self assert: (unaPared incluyePintura: unaPintura).
+	self assert: (unaPared incluyePintura: otraPintura).
+	self deny: (unaPared incluyePintura: unaPinturaMas).
 	
 	! !
