@@ -88,7 +88,7 @@ posicionOcupadaError
 
 !classDefinition: #Pintor category: #'2025-1C-Parcial-2'!
 Object subclass: #Pintor
-	instanceVariableNames: ''
+	instanceVariableNames: 'pinturasSeleccionadas'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: '2025-1C-Parcial-2'!
@@ -98,6 +98,25 @@ Object subclass: #Pintor
 pintar: unaPintura enPared: unaPared 
 	
 	unaPared agregarPintura: unaPintura .! !
+
+!Pintor methodsFor: 'acciones' stamp: 'Alejandro pontalti 8/Nov/2026, 2:02:33 am (UTC)'!
+!methodProperties: {}!
+selecionarPintura: unaPintura dePared: unaPared 
+	(unaPared incluyePintura: unaPintura) ifTrue: [pinturasSeleccionadas addLast: unaPintura ].! !
+
+
+!Pintor methodsFor: 'initialize' stamp: 'Alejandro pontalti 8/Nov/2026, 2:01:15 am (UTC)'!
+!methodProperties: {}!
+initialize
+
+	pinturasSeleccionadas := OrderedCollection new.! !
+
+
+!Pintor methodsFor: 'accessing' stamp: 'Alejandro pontalti 8/Nov/2026, 2:03:44 am (UTC)'!
+!methodProperties: {}!
+pinturasSeleccionadas
+
+	^pinturasSeleccionadas! !
 
 
 !classDefinition: #Pintura category: #'2025-1C-Parcial-2'!
@@ -233,3 +252,39 @@ test005noPuedeAgregarMasDeUnaPinturaEnParedEnPosicionesYExtencionesOcupadas
 	self deny: (unaPared incluyePintura: unaPinturaMas).
 	
 	! !
+
+!PintorTest methodsFor: 'test' stamp: 'Alejandro pontalti 8/Nov/2026, 1:46:41 am (UTC)'!
+!methodProperties: {}!
+test006puedeAgregarMasDeUnaPinturaEnParedesDistintas
+
+	| unPintor unaPared unaPintura otraPintura unaPinturaMas otraPared |
+	unPintor := Pintor new.
+	unaPared := Pared new initializeWith: 14@8.
+	otraPared := Pared new initializeWith: 14@8.
+	unaPintura := Pintura new inicializarEnPosicion: 10@5 conExtencion: 3@2.
+	unPintor pintar: unaPintura enPared: unaPared.
+	otraPintura := Pintura new inicializarEnPosicion: 8@2 conExtencion: 4@4.
+	unPintor pintar: otraPintura enPared: unaPared.
+	unaPinturaMas := Pintura new inicializarEnPosicion: 8@2 conExtencion: 4@4.
+	
+	unPintor pintar: unaPinturaMas enPared: otraPared.
+		
+	self assert: (unaPared incluyePintura: unaPintura).
+	self assert: (unaPared incluyePintura: otraPintura).
+	self assert: (otraPared incluyePintura: unaPinturaMas).
+	
+	! !
+
+!PintorTest methodsFor: 'test' stamp: 'Alejandro pontalti 8/Nov/2026, 2:05:58 am (UTC)'!
+!methodProperties: {}!
+test007puedeSeleccionarPinturaDePared
+
+	| unPintor unaPared unaPintura |
+	unPintor := Pintor new.
+	unaPared := Pared new initializeWith: 14@8.
+	unaPintura := Pintura new inicializarEnPosicion: 10@5 conExtencion: 3@2.
+	unPintor pintar: unaPintura enPared: unaPared.	
+	unPintor selecionarPintura: unaPintura dePared: unaPared.
+		
+	self assert: (unaPared incluyePintura: unaPintura).
+	self assert: (unPintor pinturasSeleccionadas = {unaPintura }asOrderedCollection ).! !
