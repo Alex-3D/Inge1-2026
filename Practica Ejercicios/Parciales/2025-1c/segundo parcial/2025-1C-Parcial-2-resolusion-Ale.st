@@ -1,3 +1,31 @@
+!classDefinition: #AccionPintarPared category: #'2025-1C-Parcial-2'!
+Object subclass: #AccionPintarPared
+	instanceVariableNames: 'pared pintura'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: '2025-1C-Parcial-2'!
+
+!AccionPintarPared methodsFor: 'aciones' stamp: 'Alejandro Pontalti 12/Nov/2026, 4:05:30 am (UTC)'!
+!methodProperties: {}!
+deshacer
+
+	pared removerPintura: pintura.! !
+
+!AccionPintarPared methodsFor: 'aciones' stamp: 'Alejandro Pontalti 12/Nov/2026, 4:05:10 am (UTC)'!
+!methodProperties: {}!
+hacer
+
+	pared agregarPintura: pintura.! !
+
+
+!AccionPintarPared methodsFor: 'initialize' stamp: 'Alejandro Pontalti 12/Nov/2026, 4:06:32 am (UTC)'!
+!methodProperties: {}!
+initializeWith: unaPared andPintura: unaPintura 
+	
+	pared := unaPared.
+	pintura := unaPintura.! !
+
+
 !classDefinition: #Pared category: #'2025-1C-Parcial-2'!
 Object subclass: #Pared
 	instanceVariableNames: 'pinturas extencion'
@@ -12,6 +40,12 @@ agregarPintura: unaPintura
 	self pinturaAAgregarValida: unaPintura.
 	
 	pinturas add: unaPintura.! !
+
+!Pared methodsFor: 'acciones' stamp: 'Alejandro Pontalti 12/Nov/2026, 4:13:55 am (UTC)'!
+!methodProperties: {}!
+removerPintura: unaPintura
+	 
+	pinturas := pinturas select: [:pintura | (pintura = unaPintura ) not].! !
 
 !Pared methodsFor: 'acciones' stamp: 'Alejandro Pontalti 11/Nov/2026, 2:01:35 am (UTC)'!
 !methodProperties: {}!
@@ -119,118 +153,145 @@ posicionOcupadaError
 
 !classDefinition: #Pintor category: #'2025-1C-Parcial-2'!
 Object subclass: #Pintor
-	instanceVariableNames: 'pinturasSeleccionadas'
+	instanceVariableNames: 'pinturasSeleccionadas accionesRealizadas accionesARehacer'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: '2025-1C-Parcial-2'!
 
-!Pintor methodsFor: 'acciones' stamp: 'Alejandro Pontalti 11/Nov/2026, 2:18:50 am (UTC)'!
+!Pintor methodsFor: 'acciones' stamp: 'Alejandro Pontalti 12/Nov/2026, 5:09:32 am (UTC)'!
 !methodProperties: {}!
-agregarPinturaSeleccionadaNoRepetida: unaPintura
-	
-	(self pinturaSeleccionadaRepetida: unaPintura) ifTrue: [^self error: Pintor pinturaSeleccionadaRepetidaError] 
-		ifFalse: [pinturasSeleccionadas addLast: unaPintura] .! !
-
-!Pintor methodsFor: 'acciones' stamp: 'Alejandro Pontalti 11/Nov/2026, 4:43:54 am (UTC)'!
-!methodProperties: {}!
-alinearPinturasSeleccionadasADerecha
+alinearPinturasSeleccionadasADerechaEnPared: unaPared
 	
 	|pinturaMayorPosicionX|
 	
-	self validarCantidadMinimaSeleccionadaParaAlinear.
-	pinturaMayorPosicionX := self encontrarMayorPosicionXMasAnchoEnSeleccionadas.
-	self alinearPinturasSeleccionadasAMayorPosicionXMasAncho: pinturaMayorPosicionX.! !
+	self validarCantidadMinimaSeleccionadaParaAlinearEnPared: unaPared.
+	pinturaMayorPosicionX := self encontrarMayorPosicionXMasAnchoEnSeleccionadasEnPared: unaPared.
+	self alinearPinturasSeleccionadasAMayorPosicionXMasAncho: pinturaMayorPosicionX enPared: unaPared.! !
 
-!Pintor methodsFor: 'acciones' stamp: 'Alejandro Pontalti 11/Nov/2026, 1:46:44 am (UTC)'!
+!Pintor methodsFor: 'acciones' stamp: 'Alejandro Pontalti 12/Nov/2026, 5:04:41 am (UTC)'!
 !methodProperties: {}!
-alinearPinturasSeleccionadasAIzquierda
+alinearPinturasSeleccionadasAIzquierdaEnPared: unaPared
 	
 	|pinturaMenorPosicionX|
 	
-	self validarCantidadMinimaSeleccionadaParaAlinear.
-	pinturaMenorPosicionX := self encontrarMenorPosicionXEnSeleccionadas.
-	self  alinearPinturasSeleccionadasAMenorPosicionX: pinturaMenorPosicionX.! !
+	self validarCantidadMinimaSeleccionadaParaAlinearEnPared: unaPared.
+	pinturaMenorPosicionX := self encontrarMenorPosicionXEnSeleccionadasEnPared: unaPared.
+	self  alinearPinturasSeleccionadasAMenorPosicionX: pinturaMenorPosicionX enPared: unaPared.! !
 
-!Pintor methodsFor: 'acciones' stamp: 'Alejandro pontalti 31/Oct/2026, 12:03:42 am (UTC)'!
+!Pintor methodsFor: 'acciones' stamp: 'Alejandro Pontalti 12/Nov/2026, 5:47:20 am (UTC)'!
+!methodProperties: {}!
+deshacerAccionEnPared: unaPared 
+		
+	(accionesRealizadas at: unaPared) last deshacer.
+	(accionesARehacer at: unaPared ifAbsent: [accionesARehacer at: unaPared put: OrderedCollection new.]) addLast: ((accionesRealizadas at: unaPared) removeLast).! !
+
+!Pintor methodsFor: 'acciones' stamp: 'Alejandro Pontalti 12/Nov/2026, 6:11:24 am (UTC)'!
 !methodProperties: {}!
 pintar: unaPintura enPared: unaPared 
 	
-	unaPared agregarPintura: unaPintura .! !
-
-!Pintor methodsFor: 'acciones' stamp: 'Alejandro Pontalti 11/Nov/2026, 2:19:47 am (UTC)'!
-!methodProperties: {}!
-pinturaSeleccionadaRepetida: unaPintura
+	| accion |
 	
-	^((pinturasSeleccionadas select: [ :pintura | unaPintura = pintura ]) isEmpty not). ! !
+	accion := AccionPintarPared new initializeWith: unaPared andPintura: unaPintura.
+	
+	accion hacer.
+	
+	(accionesRealizadas at: unaPared ifAbsent: [accionesRealizadas at: unaPared put: OrderedCollection new.]) addLast: accion.
+	accionesARehacer at: unaPared ifPresent: [:accionesDeLaPared | accionesDeLaPared removeAll].! !
 
-!Pintor methodsFor: 'acciones' stamp: 'Alejandro Pontalti 11/Nov/2026, 2:05:32 am (UTC)'!
+!Pintor methodsFor: 'acciones' stamp: 'Alejandro Pontalti 12/Nov/2026, 6:15:35 am (UTC)'!
+!methodProperties: {}!
+reHacerAccionEnPared: unaPared 
+	
+	accionesARehacer at: unaPared ifAbsent: [^self error: Pintor noAccionParaReshacerError ].
+	(accionesARehacer at: unaPared) ifEmpty: [^self error: Pintor noAccionParaReshacerError ].
+			
+	(accionesARehacer at: unaPared ) last hacer.
+	(accionesRealizadas at: unaPared) addLast: ((accionesARehacer at: unaPared ) removeLast).! !
+
+!Pintor methodsFor: 'acciones' stamp: 'Alejandro Pontalti 12/Nov/2026, 4:20:20 am (UTC)'!
 !methodProperties: {}!
 selecionarPintura: unaPintura dePared: unaPared 
 	
-	self agregarPinturaSeleccionadaNoRepetida: (unaPared seleccionarPintura: unaPintura).! !
+	self agregarPinturaSeleccionadaNoRepetida: (unaPared seleccionarPintura: unaPintura) dePared: unaPared.! !
 
 
-!Pintor methodsFor: 'initialize' stamp: 'Alejandro pontalti 8/Nov/2026, 2:01:15 am (UTC)'!
+!Pintor methodsFor: 'initialize' stamp: 'Alejandro Pontalti 12/Nov/2026, 5:29:51 am (UTC)'!
 !methodProperties: {}!
 initialize
 
-	pinturasSeleccionadas := OrderedCollection new.! !
+	pinturasSeleccionadas := Dictionary new.
+	accionesRealizadas := Dictionary new.
+	accionesARehacer := Dictionary new.! !
 
 
-!Pintor methodsFor: 'private' stamp: 'Alejandro Pontalti 11/Nov/2026, 4:52:10 am (UTC)'!
+!Pintor methodsFor: 'private' stamp: 'Alejandro Pontalti 12/Nov/2026, 4:51:18 am (UTC)'!
 !methodProperties: {}!
-alinearPinturasSeleccionadasAMayorPosicionXMasAncho: pinturaMayorPosicionXMasAncho
+agregarPinturaSeleccionadaNoRepetida: unaPintura dePared: unaPared 
+	
+	(self pinturaSeleccionadaRepetida: unaPintura enPared: unaPared) ifTrue: [^self error: Pintor pinturaSeleccionadaRepetidaError] 
+		ifFalse: [(pinturasSeleccionadas at: unaPared ifAbsent:[pinturasSeleccionadas at: unaPared put: OrderedCollection new.
+		pinturasSeleccionadas at: unaPared.]) addLast: unaPintura] .! !
+
+!Pintor methodsFor: 'private' stamp: 'Alejandro Pontalti 12/Nov/2026, 5:08:53 am (UTC)'!
+!methodProperties: {}!
+alinearPinturasSeleccionadasAMayorPosicionXMasAncho: pinturaMayorPosicionXMasAncho enPared: unaPared 
 
 	|loQueLeFalta|
 	
-	pinturasSeleccionadas do: [ 
+	(pinturasSeleccionadas at: unaPared) do: [ 
 		:pintura | 
 		loQueLeFalta := pinturaMayorPosicionXMasAncho - (pintura posicion x + pintura extencion x).
 		pintura posicion: ((pintura posicion x + loQueLeFalta)@pintura posicion y).
 	].! !
 
-!Pintor methodsFor: 'private' stamp: 'Alejandro Pontalti 11/Nov/2026, 4:52:10 am (UTC)'!
+!Pintor methodsFor: 'private' stamp: 'Alejandro Pontalti 12/Nov/2026, 5:03:25 am (UTC)'!
 !methodProperties: {}!
-alinearPinturasSeleccionadasAMenorPosicionX: pinturaMenorPosicionX
+alinearPinturasSeleccionadasAMenorPosicionX: pinturaMenorPosicionX enPared: unaPared 
 	
-	pinturasSeleccionadas do: [ :pintura | pintura posicion: (pinturaMenorPosicionX@pintura posicion y)].! !
+	(pinturasSeleccionadas at: unaPared) do: [ :pintura | pintura posicion: (pinturaMenorPosicionX@pintura posicion y)].! !
 
-!Pintor methodsFor: 'private' stamp: 'Alejandro Pontalti 11/Nov/2026, 4:37:21 am (UTC)'!
+!Pintor methodsFor: 'private' stamp: 'Alejandro Pontalti 12/Nov/2026, 5:10:17 am (UTC)'!
 !methodProperties: {}!
-encontrarMayorPosicionXMasAnchoEnSeleccionadas
+encontrarMayorPosicionXMasAnchoEnSeleccionadasEnPared: unaPared
 	
 	|pinturaMayorPosicionXMasAncho|
 	
-	pinturaMayorPosicionXMasAncho := pinturasSeleccionadas first posicion x.
-	pinturaMayorPosicionXMasAncho := pinturaMayorPosicionXMasAncho + pinturasSeleccionadas first extencion x.
+	pinturaMayorPosicionXMasAncho := (pinturasSeleccionadas at: unaPared) first posicion x.
+	pinturaMayorPosicionXMasAncho := pinturaMayorPosicionXMasAncho + (pinturasSeleccionadas at: unaPared) first extencion x.
 	
-	pinturasSeleccionadas do: [ 
+	(pinturasSeleccionadas at: unaPared) do: [ 
 		:pintura | 
 		((pintura posicion x + pintura extencion x) > pinturaMayorPosicionXMasAncho) ifTrue: [pinturaMayorPosicionXMasAncho := (pintura posicion x + pintura extencion x)]. 
 	].
 	
 	^pinturaMayorPosicionXMasAncho.! !
 
-!Pintor methodsFor: 'private' stamp: 'Alejandro Pontalti 11/Nov/2026, 1:43:52 am (UTC)'!
+!Pintor methodsFor: 'private' stamp: 'Alejandro Pontalti 12/Nov/2026, 5:05:47 am (UTC)'!
 !methodProperties: {}!
-encontrarMenorPosicionXEnSeleccionadas
+encontrarMenorPosicionXEnSeleccionadasEnPared: unaPared
 	
 	|pinturaMenorPosicionX|
 	
-	pinturaMenorPosicionX := pinturasSeleccionadas first posicion x.
+	pinturaMenorPosicionX := (pinturasSeleccionadas at: unaPared) first posicion x.
 	
-	pinturasSeleccionadas do: [ 
+	(pinturasSeleccionadas at: unaPared) do: [ 
 		:pintura | 
 		(pintura posicion x < pinturaMenorPosicionX) ifTrue: [pinturaMenorPosicionX := pintura posicion x]. 
 	].
 	
 	^pinturaMenorPosicionX.! !
 
-!Pintor methodsFor: 'private' stamp: 'Alejandro Pontalti 11/Nov/2026, 1:41:20 am (UTC)'!
+!Pintor methodsFor: 'private' stamp: 'Alejandro Pontalti 12/Nov/2026, 4:34:38 am (UTC)'!
 !methodProperties: {}!
-validarCantidadMinimaSeleccionadaParaAlinear
+pinturaSeleccionadaRepetida: unaPintura enPared: unaPared 
+	
+	^(((pinturasSeleccionadas at: unaPared ifAbsent: [^false.]) select: [ :pintura | unaPintura = pintura ]) isEmpty not). ! !
 
-	(pinturasSeleccionadas size < 2) ifTrue: [^self error: Pintor pinturasSeleccionadasAlineacionError ].! !
+!Pintor methodsFor: 'private' stamp: 'Alejandro Pontalti 12/Nov/2026, 4:59:27 am (UTC)'!
+!methodProperties: {}!
+validarCantidadMinimaSeleccionadaParaAlinearEnPared: unaPared
+
+	((pinturasSeleccionadas at: unaPared ifAbsent: [{}]) size < 2) ifTrue: [^self error: Pintor pinturasSeleccionadasAlineacionError ].! !
 
 
 !Pintor methodsFor: 'accessing' stamp: 'Alejandro pontalti 8/Nov/2026, 2:03:44 am (UTC)'!
@@ -244,6 +305,18 @@ pinturasSeleccionadas
 !classDefinition: 'Pintor class' category: #'2025-1C-Parcial-2'!
 Pintor class
 	instanceVariableNames: ''!
+
+!Pintor class methodsFor: 'error' stamp: 'Alejandro Pontalti 12/Nov/2026, 1:23:59 am (UTC)'!
+!methodProperties: {}!
+noAccionParaDeshacerError
+	
+	^'Debe existir accion para poder deshacerla.'! !
+
+!Pintor class methodsFor: 'error' stamp: 'Alejandro Pontalti 12/Nov/2026, 6:16:28 am (UTC)'!
+!methodProperties: {}!
+noAccionParaReshacerError
+	
+	^'No hay Acciones para Re hacer.'! !
 
 !Pintor class methodsFor: 'error' stamp: 'Alejandro Pontalti 10/Nov/2026, 11:30:20 pm (UTC)'!
 !methodProperties: {}!
@@ -421,7 +494,7 @@ test006puedeAgregarMasDeUnaPinturaEnParedesDistintas
 	
 	! !
 
-!PintorTest methodsFor: 'test' stamp: 'Alejandro pontalti 8/Nov/2026, 2:05:58 am (UTC)'!
+!PintorTest methodsFor: 'test' stamp: 'Alejandro Pontalti 12/Nov/2026, 4:49:22 am (UTC)'!
 !methodProperties: {}!
 test007puedeSeleccionarPinturaDePared
 
@@ -433,7 +506,7 @@ test007puedeSeleccionarPinturaDePared
 	unPintor selecionarPintura: unaPintura dePared: unaPared.
 		
 	self assert: (unaPared incluyePintura: unaPintura).
-	self assert: (unPintor pinturasSeleccionadas = {unaPintura }asOrderedCollection ).! !
+	self assert: ((unPintor pinturasSeleccionadas at: unaPared)= {unaPintura }asOrderedCollection ).! !
 
 !PintorTest methodsFor: 'test' stamp: 'Alejandro Pontalti 11/Nov/2026, 2:09:09 am (UTC)'!
 !methodProperties: {}!
@@ -451,7 +524,7 @@ test008noPuedeSeleccionarPinturaQueNoEsteEnPared
 	self deny: (unaPared incluyePintura: unaPintura).
 	self assert: (unPintor pinturasSeleccionadas isEmpty ).! !
 
-!PintorTest methodsFor: 'test' stamp: 'Alejandro Pontalti 11/Nov/2026, 2:10:45 am (UTC)'!
+!PintorTest methodsFor: 'test' stamp: 'Alejandro Pontalti 12/Nov/2026, 4:52:35 am (UTC)'!
 !methodProperties: {}!
 test009noPuedeSeleccionarPinturasRepetidasDePared
 
@@ -475,9 +548,9 @@ test009noPuedeSeleccionarPinturasRepetidasDePared
 	self assert: (unaPared incluyePintura: unaPintura).
 	self assert: (unaPared incluyePintura: otraPintura).
 	self assert: (unaPared incluyePintura: unaPinturaMas).
-	self assert: (unPintor pinturasSeleccionadas = {unaPintura. otraPintura. unaPinturaMas }asOrderedCollection ).! !
+	self assert: ((unPintor pinturasSeleccionadas at: unaPared ) = {unaPintura. otraPintura. unaPinturaMas }asOrderedCollection ).! !
 
-!PintorTest methodsFor: 'test' stamp: 'Alejandro Pontalti 11/Nov/2026, 4:24:44 am (UTC)'!
+!PintorTest methodsFor: 'test' stamp: 'Alejandro Pontalti 12/Nov/2026, 5:06:19 am (UTC)'!
 !methodProperties: {}!
 test010alinearPinturasSeleccionadasALaIzquierdaMueveLosXHaciaElMenorX
 
@@ -494,15 +567,15 @@ test010alinearPinturasSeleccionadasALaIzquierdaMueveLosXHaciaElMenorX
 	unPintor selecionarPintura: otraPintura dePared: unaPared.
 	unPintor selecionarPintura: unaPinturaMas dePared: unaPared.
 	
-	unPintor alinearPinturasSeleccionadasAIzquierda.
+	unPintor alinearPinturasSeleccionadasAIzquierdaEnPared: unaPared.
 
-	self assert: (unPintor pinturasSeleccionadas = {unaPintura. otraPintura. unaPinturaMas }asOrderedCollection ).
+	self assert: ((unPintor pinturasSeleccionadas at: unaPared ) = {unaPintura. otraPintura. unaPinturaMas }asOrderedCollection ).
 	self assert: (unaPintura posicion x = 2).
 	self assert: (unaPintura posicion x = otraPintura posicion x).
 	self assert: (unaPinturaMas posicion x = otraPintura posicion x).
 	! !
 
-!PintorTest methodsFor: 'test' stamp: 'Alejandro Pontalti 11/Nov/2026, 2:11:11 am (UTC)'!
+!PintorTest methodsFor: 'test' stamp: 'Alejandro Pontalti 12/Nov/2026, 5:06:43 am (UTC)'!
 !methodProperties: {}!
 test011noPuedeAlinearPinturasSiSeleccionoMenosDeDosPinturas
 
@@ -513,14 +586,14 @@ test011noPuedeAlinearPinturasSiSeleccionoMenosDeDosPinturas
 	unPintor pintar: unaPintura enPared: unaPared.	
 	unPintor selecionarPintura: unaPintura dePared: unaPared.
 	
-	self should: [unPintor alinearPinturasSeleccionadasAIzquierda.]
+	self should: [unPintor alinearPinturasSeleccionadasAIzquierdaEnPared: unaPared.]
 	raise: Error
 	withExceptionDo: [ :error | error messageText = Pintor pinturasSeleccionadasAlineacionError.] . 
 
-	self assert: (unPintor pinturasSeleccionadas = {unaPintura }asOrderedCollection ).
+	self assert: ((unPintor pinturasSeleccionadas at: unaPared ) = {unaPintura }asOrderedCollection ).
 	self assert: (unaPintura posicion x = 10).! !
 
-!PintorTest methodsFor: 'test' stamp: 'Alejandro Pontalti 11/Nov/2026, 4:28:43 am (UTC)'!
+!PintorTest methodsFor: 'test' stamp: 'Alejandro Pontalti 12/Nov/2026, 5:10:40 am (UTC)'!
 !methodProperties: {}!
 test012alinearPinturasSeleccionadasALaDerechaMueveLosXHaciaElMayorXMasAncho
 
@@ -537,10 +610,104 @@ test012alinearPinturasSeleccionadasALaDerechaMueveLosXHaciaElMayorXMasAncho
 	unPintor selecionarPintura: otraPintura dePared: unaPared.
 	unPintor selecionarPintura: unaPinturaMas dePared: unaPared.
 	
-	unPintor alinearPinturasSeleccionadasADerecha.
+	unPintor alinearPinturasSeleccionadasADerechaEnPared: unaPared.
 
-	self assert: (unPintor pinturasSeleccionadas = {unaPintura. otraPintura. unaPinturaMas }asOrderedCollection ).
+	self assert: ((unPintor pinturasSeleccionadas at: unaPared)= {unaPintura. otraPintura. unaPinturaMas }asOrderedCollection ).
 	self assert: ((unaPintura posicion x + unaPintura extencion x) = 13).
 	self assert: ((otraPintura posicion x + otraPintura extencion x) = 13).
 	self assert: ((unaPinturaMas posicion x + unaPinturaMas extencion x) = 13).
+	! !
+
+!PintorTest methodsFor: 'test' stamp: 'Alejandro Pontalti 12/Nov/2026, 4:07:58 am (UTC)'!
+!methodProperties: {}!
+test013noPuedeDeshacerAccionesSiNoSeRealizaron
+
+	| unPintor unaPared |
+	unPintor := Pintor new.
+	unaPared := Pared new initializeWith: 14@8.
+	
+	self should: [unPintor deshacerAccionEnPared: unaPared.]
+	raise: Error
+	withExceptionDo: [ :error | error messageText = Pintor noAccionParaDeshacerError.] . 
+! !
+
+!PintorTest methodsFor: 'test' stamp: 'Alejandro Pontalti 12/Nov/2026, 5:12:01 am (UTC)'!
+!methodProperties: {}!
+test014puedeDeshacerAccionDePintarPared
+
+	| unPintor unaPared unaPintura |
+	unPintor := Pintor new.
+	unaPared := Pared new initializeWith: 14@8.
+	unaPintura := Pintura new inicializarEnPosicion: 10@5 conExtencion: 3@2.
+	unPintor pintar: unaPintura enPared: unaPared.	
+	unPintor deshacerAccionEnPared: unaPared.
+		
+	self deny: (unaPared incluyePintura: unaPintura).! !
+
+!PintorTest methodsFor: 'test' stamp: 'Alejandro Pontalti 12/Nov/2026, 5:12:39 am (UTC)'!
+!methodProperties: {}!
+test015puedeRehacerUnaAccionDePintarParedDeshecha
+
+	| unPintor unaPared unaPintura |
+	unPintor := Pintor new.
+	unaPared := Pared new initializeWith: 14@8.
+	unaPintura := Pintura new inicializarEnPosicion: 10@5 conExtencion: 3@2.
+	unPintor pintar: unaPintura enPared: unaPared.	
+	unPintor deshacerAccionEnPared: unaPared.
+	unPintor reHacerAccionEnPared: unaPared.
+		
+	self assert: (unaPared incluyePintura: unaPintura).! !
+
+!PintorTest methodsFor: 'test' stamp: 'Alejandro Pontalti 12/Nov/2026, 5:24:08 am (UTC)'!
+!methodProperties: {}!
+test016noPuedeDeshacerUnaAccionDePintarParedDeshecha
+
+	| unPintor unaPared unaPintura |
+	unPintor := Pintor new.
+	unaPared := Pared new initializeWith: 14@8.
+	unaPintura := Pintura new inicializarEnPosicion: 10@5 conExtencion: 3@2.
+	unPintor pintar: unaPintura enPared: unaPared.	
+	unPintor deshacerAccionEnPared: unaPared.
+	
+	self should:  [unPintor deshacerAccionEnPared: unaPared.]
+	raise:  Error - MessageNotUnderstood
+	withExceptionDo: [ :anError | anError messageText = Pintor noAccionParaDeshacerError.].
+		
+	self deny: (unaPared incluyePintura: unaPintura).! !
+
+!PintorTest methodsFor: 'test' stamp: 'Alejandro Pontalti 12/Nov/2026, 5:49:55 am (UTC)'!
+!methodProperties: {}!
+test017puedeDeshacerUnRehacerDeUnaAccionDePintarParedDeshecha
+
+	| unPintor unaPared unaPintura |
+	unPintor := Pintor new.
+	unaPared := Pared new initializeWith: 14@8.
+	unaPintura := Pintura new inicializarEnPosicion: 10@5 conExtencion: 3@2.
+	unPintor pintar: unaPintura enPared: unaPared.	
+	unPintor deshacerAccionEnPared: unaPared.
+	unPintor reHacerAccionEnPared: unaPared.
+	unPintor deshacerAccionEnPared: unaPared.
+		
+	self deny: (unaPared incluyePintura: unaPintura).! !
+
+!PintorTest methodsFor: 'test' stamp: 'Alejandro Pontalti 12/Nov/2026, 6:16:43 am (UTC)'!
+!methodProperties: {}!
+test018noPuedeRehacerUnaAccionDePintarParedDeshechaSiSeHizoOtraAccion
+
+	| unPintor unaPared unaPintura otraPintura |
+	unPintor := Pintor new.
+	unaPared := Pared new initializeWith: 14@8.
+	unaPintura := Pintura new inicializarEnPosicion: 10@5 conExtencion: 3@2.
+	otraPintura := Pintura new inicializarEnPosicion: 8@2 conExtencion: 4@4.
+	unPintor pintar: unaPintura enPared: unaPared.	
+	unPintor deshacerAccionEnPared: unaPared.
+	unPintor pintar: otraPintura enPared: unaPared.
+	
+	self should: [unPintor reHacerAccionEnPared: unaPared.] 
+	raise: Error -MessageNotUnderstood 
+	withExceptionDo: [:anError | self assert: (anError messageText = Pintor noAccionParaReshacerError) ].
+		
+	self deny: (unaPared incluyePintura: unaPintura).
+	self assert: (unaPared incluyePintura: otraPintura).
+	
 	! !
