@@ -114,12 +114,6 @@ Object subclass: #MovimientoPacman
 	poolDictionaries: ''
 	category: '2024-2C-Parcial-2'!
 
-!MovimientoPacman methodsFor: 'acceso' stamp: 'Alejandro Pontalti 24/Nov/2026, 12:41:24 am (UTC)'!
-!methodProperties: {}!
-direccion
-
-	^direccion.! !
-
 
 !MovimientoPacman methodsFor: 'movimiento' stamp: 'Alejandro Pontalti 24/Nov/2026, 1:07:09 am (UTC)'!
 !methodProperties: {}!
@@ -175,24 +169,18 @@ moviendoseAIzquierda
 
 !classDefinition: #PacmanGame category: #'2024-2C-Parcial-2'!
 Object subclass: #PacmanGame
-	instanceVariableNames: 'board boardExtent puntaje vidasRestantes origenPacman pacmanMoviendose elemntoOriginalEnPosicionBlinky cantidadTicks elemntoOriginalEnPosicionClyde'
+	instanceVariableNames: 'board boardExtent puntaje vidasRestantes elemntoOriginalEnPosicionBlinky cantidadTicks elemntoOriginalEnPosicionClyde pacman'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: '2024-2C-Parcial-2'!
 
-!PacmanGame methodsFor: 'string representation' stamp: 'Alejandro Pontalti 24/Nov/2026, 4:57:50 am (UTC)'!
+!PacmanGame methodsFor: 'string representation' stamp: 'Alejandro Pontalti 24/Nov/2026, 8:23:27 am (UTC)'!
 !methodProperties: {}!
 characterRepresentationOf: anElement
 	
-	(anElement etiqueta = #pacman) ifTrue: [ ^StringPacmanBoard pacmanCharacter ].
-	(anElement etiqueta = #smallPill) ifTrue: [ ^StringPacmanBoard smallPillCharacter ].
-	(anElement etiqueta = #bigPill) ifTrue: [ ^StringPacmanBoard bigPillCharacter ].
-	(anElement etiqueta = #blinky) ifTrue: [ ^StringPacmanBoard blinkyCharacter ].
-	(anElement etiqueta = #clyde) ifTrue: [ ^StringPacmanBoard clydeCharacter ].
-	(anElement etiqueta = #space) ifTrue: [ ^StringPacmanBoard spaceCharacter ].
-	(anElement etiqueta = #wall) ifTrue: [ ^StringPacmanBoard wallCharacter ].
+	^anElement characterRepresentation.
 	
-	self error: 'Unknown pacman element type'! !
+	"self error: 'Unknown pacman element type'"! !
 
 !PacmanGame methodsFor: 'string representation' stamp: 'Alejandro Pontalti 23/Nov/2026, 10:15:35 pm (UTC)'!
 !methodProperties: {}!
@@ -261,20 +249,20 @@ visitWallAt: aPosition
 	board at: aPosition put: PacmanWall new.! !
 
 
-!PacmanGame methodsFor: 'game logic' stamp: 'Alejandro Pontalti 24/Nov/2026, 5:04:05 am (UTC)'!
+!PacmanGame methodsFor: 'game logic' stamp: 'Alejandro Pontalti 24/Nov/2026, 7:57:12 am (UTC)'!
 !methodProperties: {}!
 ejecutarTick
 	
-	| nuevaPosicionPacman posicionPacman elementoOriginalEnNuevaPosicion |
+	| nuevaPosicionPacman elementoOriginalEnNuevaPosicion |
 
 	self incrementarTick.
 	self seMueveBlinky.
 	self seMueveClyde.
-	posicionPacman := board keyAtValue: (Pacman new).
-	nuevaPosicionPacman := pacmanMoviendose nuevaPosicion: posicionPacman.
+	
+	nuevaPosicionPacman := pacman nuevaPosicion.
 	elementoOriginalEnNuevaPosicion := board at: nuevaPosicionPacman.
 	
-	elementoOriginalEnNuevaPosicion ejecutarAccionEnJuego: self pacmanPosicionNueva: nuevaPosicionPacman YPacmanPosicionOriginal: posicionPacman.
+	elementoOriginalEnNuevaPosicion ejecutarAccionEnJuego: self.
 	
 	
 	
@@ -298,11 +286,11 @@ incrementarTick
 
 	^ cantidadTicks := cantidadTicks +1! !
 
-!PacmanGame methodsFor: 'game logic' stamp: 'Alejandro Pontalti 23/Nov/2026, 11:49:47 pm (UTC)'!
+!PacmanGame methodsFor: 'game logic' stamp: 'Alejandro Pontalti 24/Nov/2026, 7:54:37 am (UTC)'!
 !methodProperties: {}!
-pacmanComePillEn: elementoOriginalEnNuevaPosicion
+moverPacman
 
-	^ ((elementoOriginalEnNuevaPosicion = #smallPill) or: (elementoOriginalEnNuevaPosicion = #bigPill)).! !
+	pacman moverPosicionEnJuego: self.! !
 
 !PacmanGame methodsFor: 'game logic' stamp: 'Alejandro Pontalti 23/Nov/2026, 11:54:21 pm (UTC)'!
 !methodProperties: {}!
@@ -335,18 +323,12 @@ pacmanPierdeUnaVidaYReiniciaOPierdeJuego
 	self pacmanPierdeUnaVida.
 	self pacmanPierde ifTrue: [^'Perdiste'] ifFalse: [self reiniciarVidaPacman].! !
 
-!PacmanGame methodsFor: 'game logic' stamp: 'Alejandro Pontalti 23/Nov/2026, 11:39:31 pm (UTC)'!
-!methodProperties: {}!
-pacmanSeEncuentraConFantasmaEn: elementoOriginalEnNuevaPosicion
-
-	^ (elementoOriginalEnNuevaPosicion = #clyde) or: (elementoOriginalEnNuevaPosicion = #blinky)! !
-
-!PacmanGame methodsFor: 'game logic' stamp: 'Alejandro Pontalti 23/Nov/2026, 11:37:01 pm (UTC)'!
+!PacmanGame methodsFor: 'game logic' stamp: 'Alejandro Pontalti 24/Nov/2026, 8:10:49 am (UTC)'!
 !methodProperties: {}!
 pacmanSeMueveA: nuevaPosicionPacman YQuedaVacioEn: posicionPacman
 
 	self visitPacmanAt: nuevaPosicionPacman.
-		self visitSpaceAt: posicionPacman! !
+	self visitSpaceAt: posicionPacman! !
 
 !PacmanGame methodsFor: 'game logic' stamp: 'Alejandro Pontalti 23/Nov/2026, 10:47:48 pm (UTC)'!
 !methodProperties: {}!
@@ -360,11 +342,11 @@ reiniciarTicks
 
 	^ cantidadTicks := 0! !
 
-!PacmanGame methodsFor: 'game logic' stamp: 'Alejandro Pontalti 24/Nov/2026, 2:17:51 am (UTC)'!
+!PacmanGame methodsFor: 'game logic' stamp: 'Alejandro Pontalti 24/Nov/2026, 8:12:29 am (UTC)'!
 !methodProperties: {}!
 reiniciarVidaPacman
 
-	self visitPacmanAt: origenPacman.
+	self visitPacmanAt: pacman reiniciarVida.
 	self reiniciarTicks! !
 
 !PacmanGame methodsFor: 'game logic' stamp: 'Alejandro Pontalti 24/Nov/2026, 5:32:11 am (UTC)'!
@@ -419,39 +401,40 @@ initialize
 	elemntoOriginalEnPosicionBlinky := PacmanSpace new.
 	elemntoOriginalEnPosicionClyde := PacmanSpace new.! !
 
-!PacmanGame methodsFor: 'initialization' stamp: 'Alejandro Pontalti 24/Nov/2026, 4:57:24 am (UTC)'!
+!PacmanGame methodsFor: 'initialization' stamp: 'Alejandro Pontalti 24/Nov/2026, 7:43:51 am (UTC)'!
 !methodProperties: {}!
 initializeOn: aBoard
 
 	board := Dictionary new.
 	boardExtent := aBoard extent.
 	aBoard visitElementsWith: self.
-	origenPacman := board keyAtValue: (Pacman new).! !
+	pacman := Pacman new.
+	pacman posicionInicial: (board keyAtValue: pacman).! !
 
 
-!PacmanGame methodsFor: 'game orders' stamp: 'Alejandro Pontalti 24/Nov/2026, 1:12:22 am (UTC)'!
+!PacmanGame methodsFor: 'game orders' stamp: 'Alejandro Pontalti 24/Nov/2026, 7:45:25 am (UTC)'!
 !methodProperties: {}!
 cambiarDireccionAbajo
 	
-	pacmanMoviendose := MovimientoPacman moviendoseAAbajo.! !
+	pacman cambiarDireccionAbajo.! !
 
-!PacmanGame methodsFor: 'game orders' stamp: 'Alejandro Pontalti 24/Nov/2026, 1:12:14 am (UTC)'!
+!PacmanGame methodsFor: 'game orders' stamp: 'Alejandro Pontalti 24/Nov/2026, 7:45:39 am (UTC)'!
 !methodProperties: {}!
 cambiarDireccionArriba
 	
-	pacmanMoviendose := MovimientoPacman moviendoseAArriba.! !
+	pacman cambiarDireccionArriba.! !
 
-!PacmanGame methodsFor: 'game orders' stamp: 'Alejandro Pontalti 24/Nov/2026, 1:12:04 am (UTC)'!
+!PacmanGame methodsFor: 'game orders' stamp: 'Alejandro Pontalti 24/Nov/2026, 7:46:10 am (UTC)'!
 !methodProperties: {}!
 cambiarDireccionDerecha
 	
-	pacmanMoviendose := MovimientoPacman moviendoseADerecha.! !
+	pacman cambiarDireccionDerecha.! !
 
-!PacmanGame methodsFor: 'game orders' stamp: 'Alejandro Pontalti 24/Nov/2026, 1:11:54 am (UTC)'!
+!PacmanGame methodsFor: 'game orders' stamp: 'Alejandro Pontalti 24/Nov/2026, 7:46:34 am (UTC)'!
 !methodProperties: {}!
 cambiarDireccionIzquierda
 	
-	pacmanMoviendose := MovimientoPacman moviendoseAIzquierda.! !
+	pacman cambiarDireccionIzquierda.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -500,41 +483,91 @@ ejecutarAccionEnJuego: aPacmanGame
 
 	self subclassResponsibility! !
 
-!PacmanGameElement methodsFor: 'accion' stamp: 'Alejandro Pontalti 24/Nov/2026, 4:19:39 am (UTC)'!
-!methodProperties: {}!
-ejecutarAccionEnJuego: aPacmanGame pacmanPosicionNueva: nuevaPosicionPacman YPacmanPosicionOriginal: posicionPacman
-
-	self subclassResponsibility! !
-
 
 !classDefinition: #Pacman category: #'2024-2C-Parcial-2'!
 PacmanGameElement subclass: #Pacman
-	instanceVariableNames: ''
+	instanceVariableNames: 'pacmanMoviendose posicionOrigen posicionActual'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: '2024-2C-Parcial-2'!
 
-!Pacman methodsFor: 'initialize' stamp: 'Alejandro Pontalti 24/Nov/2026, 4:56:18 am (UTC)'!
+!Pacman methodsFor: 'initialize' stamp: 'Alejandro Pontalti 24/Nov/2026, 7:34:02 am (UTC)'!
 !methodProperties: {}!
 initialize
 	
-	etiqueta := #pacman.! !
+	etiqueta := #pacman.
+	pacmanMoviendose := MovimientoPacman moviendoseAIzquierda.! !
 
 
-!Pacman methodsFor: 'accion' stamp: 'Alejandro Pontalti 24/Nov/2026, 4:55:22 am (UTC)'!
+!Pacman methodsFor: 'accion' stamp: 'Alejandro Pontalti 24/Nov/2026, 7:57:49 am (UTC)'!
 !methodProperties: {}!
 ejecutarAccionEnJuego: aPacmanGame
 
-	
-
-	! !
-
-!Pacman methodsFor: 'accion' stamp: 'Alejandro Pontalti 24/Nov/2026, 4:56:09 am (UTC)'!
-!methodProperties: {}!
-ejecutarAccionEnJuego: aPacmanGame pacmanPosicionNueva: nuevaPosicionPacman YPacmanPosicionOriginal: posicionPacman.
-	
 	^self shouldNotImplement.
+
 	! !
+
+!Pacman methodsFor: 'accion' stamp: 'Alejandro Pontalti 24/Nov/2026, 7:51:48 am (UTC)'!
+!methodProperties: {}!
+moverPosicionEnJuego: aPacmanGame
+
+	| nuevaPosicion |
+	
+	nuevaPosicion := pacmanMoviendose nuevaPosicion: posicionActual.
+	aPacmanGame pacmanSeMueveA: nuevaPosicion YQuedaVacioEn: posicionActual.
+	posicionActual := nuevaPosicion.! !
+
+
+!Pacman methodsFor: 'string representation' stamp: 'Alejandro Pontalti 24/Nov/2026, 8:19:21 am (UTC)'!
+!methodProperties: {}!
+characterRepresentation
+	
+	 ^StringPacmanBoard pacmanCharacter.! !
+
+
+!Pacman methodsFor: 'acceso' stamp: 'Alejandro Pontalti 24/Nov/2026, 7:44:49 am (UTC)'!
+!methodProperties: {}!
+cambiarDireccionAbajo
+	
+	pacmanMoviendose := MovimientoPacman moviendoseAAbajo.! !
+
+!Pacman methodsFor: 'acceso' stamp: 'Alejandro Pontalti 24/Nov/2026, 7:45:04 am (UTC)'!
+!methodProperties: {}!
+cambiarDireccionArriba
+	
+	pacmanMoviendose := MovimientoPacman moviendoseAArriba.! !
+
+!Pacman methodsFor: 'acceso' stamp: 'Alejandro Pontalti 24/Nov/2026, 7:45:50 am (UTC)'!
+!methodProperties: {}!
+cambiarDireccionDerecha
+	
+	pacmanMoviendose := MovimientoPacman moviendoseADerecha.! !
+
+!Pacman methodsFor: 'acceso' stamp: 'Alejandro Pontalti 24/Nov/2026, 7:46:21 am (UTC)'!
+!methodProperties: {}!
+cambiarDireccionIzquierda
+	
+	pacmanMoviendose := MovimientoPacman moviendoseAIzquierda.! !
+
+!Pacman methodsFor: 'acceso' stamp: 'Alejandro Pontalti 24/Nov/2026, 7:48:34 am (UTC)'!
+!methodProperties: {}!
+nuevaPosicion
+
+	^pacmanMoviendose nuevaPosicion: posicionActual.! !
+
+!Pacman methodsFor: 'acceso' stamp: 'Alejandro Pontalti 24/Nov/2026, 7:49:15 am (UTC)'!
+!methodProperties: {}!
+posicionInicial: posicionInicial
+	
+	posicionOrigen := posicionInicial.
+	posicionActual := posicionInicial.! !
+
+!Pacman methodsFor: 'acceso' stamp: 'Alejandro Pontalti 24/Nov/2026, 8:13:41 am (UTC)'!
+!methodProperties: {}!
+reiniciarVida
+
+	posicionActual := posicionOrigen.
+	^posicionOrigen.! !
 
 
 !classDefinition: #PacmanFantasma category: #'2024-2C-Parcial-2'!
@@ -545,19 +578,11 @@ PacmanGameElement subclass: #PacmanFantasma
 	category: '2024-2C-Parcial-2'!
 
 
-!PacmanFantasma methodsFor: 'accion' stamp: 'Alejandro Pontalti 24/Nov/2026, 4:34:31 am (UTC)'!
+!PacmanFantasma methodsFor: 'accion' stamp: 'Alejandro Pontalti 24/Nov/2026, 7:55:32 am (UTC)'!
 !methodProperties: {}!
 ejecutarAccionEnJuego: aPacmanGame
 
-	aPacmanGame 
-
-	! !
-
-!PacmanFantasma methodsFor: 'accion' stamp: 'Alejandro Pontalti 24/Nov/2026, 4:34:31 am (UTC)'!
-!methodProperties: {}!
-ejecutarAccionEnJuego: aPacmanGame pacmanPosicionNueva: nuevaPosicionPacman YPacmanPosicionOriginal: posicionPacman.
-
-	aPacmanGame pacmanPierdeUnaVidaYReiniciaOPierdeJuego.
+	aPacmanGame pacmanPierdeUnaVidaYReiniciaOPierdeJuego. 
 
 	! !
 
@@ -576,13 +601,12 @@ initialize
 	etiqueta := #blinky.! !
 
 
-!PacmanBlinky methodsFor: 'accion' stamp: 'Alejandro Pontalti 24/Nov/2026, 4:25:59 am (UTC)'!
+!PacmanBlinky methodsFor: 'string representation' stamp: 'Alejandro Pontalti 24/Nov/2026, 8:20:11 am (UTC)'!
 !methodProperties: {}!
-ejecutarAccionEnJuego: aPacmanGame
+characterRepresentation
+	
+	 ^StringPacmanBoard blinkyCharacter.! !
 
-	aPacmanGame 
-
-	! !
 
 
 !classDefinition: #PacmanClyde category: #'2024-2C-Parcial-2'!
@@ -599,13 +623,12 @@ initialize
 	etiqueta := #clyde.! !
 
 
-!PacmanClyde methodsFor: 'accion' stamp: 'Alejandro Pontalti 24/Nov/2026, 4:33:34 am (UTC)'!
+
+!PacmanClyde methodsFor: 'string representation' stamp: 'Alejandro Pontalti 24/Nov/2026, 8:20:28 am (UTC)'!
 !methodProperties: {}!
-ejecutarAccionEnJuego: aPacmanGame
-
-	aPacmanGame 
-
-	! !
+characterRepresentation
+	
+	 ^StringPacmanBoard clydeCharacter.! !
 
 
 !classDefinition: #PacmanPill category: #'2024-2C-Parcial-2'!
@@ -615,12 +638,12 @@ PacmanGameElement subclass: #PacmanPill
 	poolDictionaries: ''
 	category: '2024-2C-Parcial-2'!
 
-!PacmanPill methodsFor: 'accion' stamp: 'Alejandro Pontalti 24/Nov/2026, 5:24:41 am (UTC)'!
+!PacmanPill methodsFor: 'accion' stamp: 'Alejandro Pontalti 24/Nov/2026, 7:58:14 am (UTC)'!
 !methodProperties: {}!
-ejecutarAccionEnJuego: aPacmanGame pacmanPosicionNueva: nuevaPosicionPacman YPacmanPosicionOriginal: posicionPacman.
+ejecutarAccionEnJuego: aPacmanGame
 
 	aPacmanGame pacmanIncrementaPuntosPorPill: self etiqueta.
-	aPacmanGame pacmanSeMueveA: nuevaPosicionPacman YQuedaVacioEn: posicionPacman.
+	aPacmanGame moverPacman.
 	aPacmanGame seGanoElJuego.
 
 	! !
@@ -640,13 +663,12 @@ initialize
 	etiqueta := #bigPill.! !
 
 
-!PacmanBigPill methodsFor: 'accion' stamp: 'Alejandro Pontalti 24/Nov/2026, 4:23:21 am (UTC)'!
+
+!PacmanBigPill methodsFor: 'string representation' stamp: 'Alejandro Pontalti 24/Nov/2026, 8:20:55 am (UTC)'!
 !methodProperties: {}!
-ejecutarAccionEnJuego: aPacmanGame
-
-	aPacmanGame 
-
-	! !
+characterRepresentation
+	
+	 ^StringPacmanBoard bigPillCharacter.! !
 
 
 !classDefinition: #PacmanSmallPill category: #'2024-2C-Parcial-2'!
@@ -663,13 +685,12 @@ initialize
 	etiqueta := #smallPill.! !
 
 
-!PacmanSmallPill methodsFor: 'accion' stamp: 'Alejandro Pontalti 24/Nov/2026, 4:20:23 am (UTC)'!
+
+!PacmanSmallPill methodsFor: 'string representation' stamp: 'Alejandro Pontalti 24/Nov/2026, 8:21:06 am (UTC)'!
 !methodProperties: {}!
-ejecutarAccionEnJuego: aPacmanGame
-
-	aPacmanGame 
-
-	! !
+characterRepresentation
+	
+	 ^StringPacmanBoard smallPillCharacter.! !
 
 
 !classDefinition: #PacmanSpace category: #'2024-2C-Parcial-2'!
@@ -686,21 +707,20 @@ initialize
 	etiqueta := #space.! !
 
 
-!PacmanSpace methodsFor: 'accion' stamp: 'Alejandro Pontalti 24/Nov/2026, 3:58:21 am (UTC)'!
+!PacmanSpace methodsFor: 'accion' stamp: 'Alejandro Pontalti 24/Nov/2026, 7:56:42 am (UTC)'!
 !methodProperties: {}!
 ejecutarAccionEnJuego: aPacmanGame
 
-	aPacmanGame 
+	aPacmanGame moverPacman.
 
 	! !
 
-!PacmanSpace methodsFor: 'accion' stamp: 'Alejandro Pontalti 24/Nov/2026, 4:18:15 am (UTC)'!
+
+!PacmanSpace methodsFor: 'string representation' stamp: 'Alejandro Pontalti 24/Nov/2026, 8:21:15 am (UTC)'!
 !methodProperties: {}!
-ejecutarAccionEnJuego: aPacmanGame pacmanPosicionNueva: nuevaPosicionPacman YPacmanPosicionOriginal: posicionPacman.
-
-	aPacmanGame pacmanSeMueveA: nuevaPosicionPacman YQuedaVacioEn: posicionPacman.
-
-	! !
+characterRepresentation
+	
+	 ^StringPacmanBoard spaceCharacter.! !
 
 
 !classDefinition: #PacmanWall category: #'2024-2C-Parcial-2'!
@@ -725,12 +745,12 @@ ejecutarAccionEnJuego: aPacmanGame
 
 	! !
 
-!PacmanWall methodsFor: 'accion' stamp: 'Alejandro Pontalti 24/Nov/2026, 4:19:03 am (UTC)'!
-!methodProperties: {}!
-ejecutarAccionEnJuego: aPacmanGame pacmanPosicionNueva: nuevaPosicionPacman YPacmanPosicionOriginal: posicionPacman.
-	
 
-	! !
+!PacmanWall methodsFor: 'string representation' stamp: 'Alejandro Pontalti 24/Nov/2026, 8:21:21 am (UTC)'!
+!methodProperties: {}!
+characterRepresentation
+	
+	 ^StringPacmanBoard wallCharacter.! !
 
 
 !classDefinition: #StringPacmanBoard category: #'2024-2C-Parcial-2'!
@@ -1652,4 +1672,4 @@ visitSpaceAt: position
 visitWallAt: position 
 	
 	visitedElements at: #wall put: position ! !
-(Smalltalk at: #qq__ ifAbsentPut: [OrderedCollection new]) add: (#(54 116 108 107 112 104 54 104 115 108 127 58 107 54 77 80 83 76 90 56 54 85 108 126 39 122 106 111 118 118 115 54 80 117 110 108 117 112 108 121 112 104 39 107 108 115 39 90 118 109 123 126 104 121 108 54 74 124 112 122 52 90 116 104 115 115 123 104 115 114 52 75 108 125 54 74 124 112 122 80 116 104 110 108 17 54 116 108 107 112 104 54 104 115 108 127 58 107 54 77 80 83 76 90 56 54 85 108 126 39 122 106 111 118 118 115 54 80 117 110 108 117 112 108 121 112 104 39 107 108 115 39 90 118 109 123 126 104 121 108 54 74 124 112 122 52 90 116 104 115 115 123 104 115 114 52 75 108 125 54 74 124 112 122 80 116 104 110 108 54 74 124 112 122 92 117 112 125 108 121 122 112 123 128 62 53 64 52 63 56 58 62 53 112 116 104 110 108 17 124 117 112 127 17 83 112 117 124 127 39 60 53 56 60 53 55 52 56 60 62 52 110 108 117 108 121 112 106 17 127 63 61 102 61 59 17 86 119 108 117 39 90 116 104 115 115 123 104 115 114 39 74 118 110 98 90 119 124 121 100 39 93 84 39 98 83 112 125 108 91 128 119 112 117 110 74 118 80 117 123 108 121 119 121 108 123 108 121 39 49 39 93 84 84 104 114 108 121 53 118 122 106 118 110 52 79 72 94 53 58 62 63 55 100 17 95 56 56 17 92 117 112 127 39 105 124 112 115 123 39 118 117 39 72 124 110 39 56 55 39 57 55 57 61 39 56 64 65 58 63 65 57 55 39 74 118 116 119 112 115 108 121 65 39 56 56 53 59 53 55 17 83 112 125 108 91 128 119 112 117 110 74 118 80 117 123 108 121 119 121 108 123 108 121 39 49 39 93 84 84 104 114 108 121 53 118 122 106 118 110 52 79 72 94 53 58 62 63 55 39 124 124 112 107 65 39 106 57 62 108 59 59 64 104 52 64 107 104 55 52 59 57 60 107 52 63 108 61 64 52 63 56 108 62 107 59 104 59 55 106 109 63 39 72 124 110 39 56 55 39 57 55 57 61 17 83 112 125 108 91 128 119 112 117 110 74 118 110 112 123 39 49 39 93 84 84 104 114 108 121 53 118 122 106 118 110 52 79 72 94 53 58 62 63 55 39 124 124 112 107 65 39 106 57 62 108 59 59 64 104 52 64 107 104 55 52 59 57 60 107 52 63 108 61 64 52 63 56 108 62 107 59 104 59 55 106 109 63 39 72 124 110 39 56 55 39 57 55 57 61 17 93 84 65 39 57 55 57 61 55 62 57 64 56 59 56 56 52 115 112 125 108 123 128 119 112 117 110 52 105 124 112 115 107 52 119 121 118 106 108 122 122 39 121 118 118 123 71 56 58 63 57 62 106 59 60 105 57 64 107 65 54 126 118 121 114 39 75 104 123 108 65 39 94 108 107 39 81 124 115 39 57 64 39 56 56 65 56 56 65 58 56 39 57 55 57 61 39 74 118 116 116 112 123 79 104 122 111 65 39 59 105 55 59 59 55 64 55 56 39 87 115 124 110 112 117 122 65 39 57 55 57 61 55 62 57 64 56 59 56 56 52 115 112 125 108 123 128 119 112 117 110 52 105 124 112 115 107 52 119 121 118 106 108 122 122 39 121 118 118 123 71 56 58 63 57 62 106 59 60 105 57 64 107 65 54 126 118 121 114 17 17 247 154 66 17 56 55 53 57 59 55 53 56 59 62 53 60 64 17 104 115 108 127 58 107 52 107 108 122 114 123 118 119 17 104 115 108 127 58 107 52 107 108 122 114 123 118 119 17 52 52 52 52 52 52 52 52 52 52 17 17 52 52 52 52 52 52 52 52 52 52 17 52 52 52 52 52 52 52 52 52 52 17 57 55 57 61 52 56 56 52 56 58 91 55 55 65 59 56 65 57 64 53 58 58 59 63 58 59 52 55 58 65 55 55 17 54 116 108 107 112 104 54 104 115 108 127 58 107 54 77 80 83 76 90 56 54 85 108 126 39 122 106 111 118 118 115 54 80 117 110 108 117 112 108 121 112 104 39 107 108 115 39 90 118 109 123 126 104 121 108 54 74 124 112 122 52 90 116 104 115 115 123 104 115 114 52 75 108 125 52 92 122 108 121 77 112 115 108 122 54 77 112 115 108 86 124 123 122 54 57 55 57 60 52 57 74 52 89 108 106 124 119 108 121 104 123 118 121 112 118 52 121 108 122 118 115 124 122 112 118 117 52 72 115 108 53 122 123 17 56 59 58 58 57 17 52 52 52 52 52 52 52 52 52 52 17 57 55 57 61 52 56 56 52 56 62 91 55 57 65 60 56 65 58 64 53 59 60 64 55 55 59 52 55 58 65 55 55 17 54 116 108 107 112 104 54 104 115 108 127 58 107 54 77 80 83 76 90 56 54 85 108 126 39 122 106 111 118 118 115 54 80 117 110 108 117 112 108 121 112 104 39 107 108 115 39 90 118 109 123 126 104 121 108 54 74 124 112 122 52 90 116 104 115 115 123 104 115 114 52 75 108 125 52 92 122 108 121 77 112 115 108 122 54 77 112 115 108 86 124 123 122 54 57 55 57 59 52 56 74 52 122 108 110 124 117 107 118 52 119 104 121 106 112 104 115 52 121 108 122 118 115 124 106 112 118 117 52 72 115 108 53 122 123 17 57 55 56 57 60 17 52 52 52 52 52 52 52 52 52 52 17 57 55 57 61 52 56 56 52 57 58 91 57 58 65 57 60 65 56 56 53 62 62 57 61 61 58 52 55 58 65 55 55 17 54 116 108 107 112 104 54 104 115 108 127 58 107 54 77 80 83 76 90 56 54 85 108 126 39 122 106 111 118 118 115 54 80 117 110 108 117 112 108 121 112 104 39 107 108 115 39 90 118 109 123 126 104 121 108 54 74 124 112 122 52 90 116 104 115 115 123 104 115 114 52 75 108 125 52 92 122 108 121 77 112 115 108 122 54 77 112 115 108 86 124 123 122 54 57 55 57 59 52 57 74 52 87 104 121 106 112 104 115 52 57 52 121 108 122 118 115 124 106 112 118 117 52 72 115 108 53 122 123 17 59 56 55 57 63 17 52 52 52 52 52 52 52 52 52 52 17 57 55 57 61 52 56 56 52 57 59 91 55 57 65 58 60 65 55 61 53 63 63 57 64 55 59 52 55 58 65 55 55 17 54 116 108 107 112 104 54 104 115 108 127 58 107 54 77 80 83 76 90 56 54 85 108 126 39 122 106 111 118 118 115 54 80 117 110 108 117 112 108 121 112 104 39 107 108 115 39 90 118 109 123 126 104 121 108 54 74 124 112 122 52 90 116 104 115 115 123 104 115 114 52 75 108 125 52 92 122 108 121 77 112 115 108 122 54 77 112 115 108 86 124 123 122 54 57 55 57 59 52 57 74 52 87 104 121 106 112 104 115 52 57 52 121 108 122 118 115 124 106 112 118 117 52 72 115 108 53 122 123 17 59 64 57 57 59 17 52 52 52 52 52 52 52 52 52 52 17 17))!
+(Smalltalk at: #qq__ ifAbsentPut: [OrderedCollection new]) add: (#(54 116 108 107 112 104 54 104 115 108 127 58 107 54 77 80 83 76 90 56 54 85 108 126 39 122 106 111 118 118 115 54 80 117 110 108 117 112 108 121 112 104 39 107 108 115 39 90 118 109 123 126 104 121 108 54 74 124 112 122 52 90 116 104 115 115 123 104 115 114 52 75 108 125 54 74 124 112 122 80 116 104 110 108 17 54 116 108 107 112 104 54 104 115 108 127 58 107 54 77 80 83 76 90 56 54 85 108 126 39 122 106 111 118 118 115 54 80 117 110 108 117 112 108 121 112 104 39 107 108 115 39 90 118 109 123 126 104 121 108 54 74 124 112 122 52 90 116 104 115 115 123 104 115 114 52 75 108 125 54 74 124 112 122 80 116 104 110 108 54 74 124 112 122 92 117 112 125 108 121 122 112 123 128 62 53 64 52 63 56 58 62 53 112 116 104 110 108 17 124 117 112 127 17 83 112 117 124 127 39 60 53 56 60 53 55 52 56 60 62 52 110 108 117 108 121 112 106 17 127 63 61 102 61 59 17 86 119 108 117 39 90 116 104 115 115 123 104 115 114 39 74 118 110 98 90 119 124 121 100 39 93 84 39 98 83 112 125 108 91 128 119 112 117 110 74 118 80 117 123 108 121 119 121 108 123 108 121 39 49 39 93 84 84 104 114 108 121 53 118 122 106 118 110 52 79 72 94 53 58 62 63 55 100 17 95 56 56 17 92 117 112 127 39 105 124 112 115 123 39 118 117 39 72 124 110 39 56 55 39 57 55 57 61 39 56 64 65 58 63 65 57 55 39 74 118 116 119 112 115 108 121 65 39 56 56 53 59 53 55 17 83 112 125 108 91 128 119 112 117 110 74 118 80 117 123 108 121 119 121 108 123 108 121 39 49 39 93 84 84 104 114 108 121 53 118 122 106 118 110 52 79 72 94 53 58 62 63 55 39 124 124 112 107 65 39 106 57 62 108 59 59 64 104 52 64 107 104 55 52 59 57 60 107 52 63 108 61 64 52 63 56 108 62 107 59 104 59 55 106 109 63 39 72 124 110 39 56 55 39 57 55 57 61 17 83 112 125 108 91 128 119 112 117 110 74 118 110 112 123 39 49 39 93 84 84 104 114 108 121 53 118 122 106 118 110 52 79 72 94 53 58 62 63 55 39 124 124 112 107 65 39 106 57 62 108 59 59 64 104 52 64 107 104 55 52 59 57 60 107 52 63 108 61 64 52 63 56 108 62 107 59 104 59 55 106 109 63 39 72 124 110 39 56 55 39 57 55 57 61 17 93 84 65 39 57 55 57 61 55 62 57 64 56 59 56 56 52 115 112 125 108 123 128 119 112 117 110 52 105 124 112 115 107 52 119 121 118 106 108 122 122 39 121 118 118 123 71 56 58 63 57 62 106 59 60 105 57 64 107 65 54 126 118 121 114 39 75 104 123 108 65 39 94 108 107 39 81 124 115 39 57 64 39 56 56 65 56 56 65 58 56 39 57 55 57 61 39 74 118 116 116 112 123 79 104 122 111 65 39 59 105 55 59 59 55 64 55 56 39 87 115 124 110 112 117 122 65 39 57 55 57 61 55 62 57 64 56 59 56 56 52 115 112 125 108 123 128 119 112 117 110 52 105 124 112 115 107 52 119 121 118 106 108 122 122 39 121 118 118 123 71 56 58 63 57 62 106 59 60 105 57 64 107 65 54 126 118 121 114 17 17 247 154 66 17 56 55 53 57 59 55 53 56 59 62 53 60 64 17 104 115 108 127 58 107 52 107 108 122 114 123 118 119 17 104 115 108 127 58 107 52 107 108 122 114 123 118 119 17 52 52 52 52 52 52 52 52 52 52 17 17 52 52 52 52 52 52 52 52 52 52 17 52 52 52 52 52 52 52 52 52 52 17 57 55 57 61 52 56 56 52 56 58 91 55 55 65 59 56 65 57 64 53 58 58 59 63 58 59 52 55 58 65 55 55 17 54 116 108 107 112 104 54 104 115 108 127 58 107 54 77 80 83 76 90 56 54 85 108 126 39 122 106 111 118 118 115 54 80 117 110 108 117 112 108 121 112 104 39 107 108 115 39 90 118 109 123 126 104 121 108 54 74 124 112 122 52 90 116 104 115 115 123 104 115 114 52 75 108 125 52 92 122 108 121 77 112 115 108 122 54 77 112 115 108 86 124 123 122 54 57 55 57 60 52 57 74 52 89 108 106 124 119 108 121 104 123 118 121 112 118 52 121 108 122 118 115 124 122 112 118 117 52 72 115 108 53 122 123 17 56 59 58 58 57 17 52 52 52 52 52 52 52 52 52 52 17 57 55 57 61 52 56 56 52 56 62 91 55 57 65 60 56 65 58 64 53 59 60 64 55 55 59 52 55 58 65 55 55 17 54 116 108 107 112 104 54 104 115 108 127 58 107 54 77 80 83 76 90 56 54 85 108 126 39 122 106 111 118 118 115 54 80 117 110 108 117 112 108 121 112 104 39 107 108 115 39 90 118 109 123 126 104 121 108 54 74 124 112 122 52 90 116 104 115 115 123 104 115 114 52 75 108 125 52 92 122 108 121 77 112 115 108 122 54 77 112 115 108 86 124 123 122 54 57 55 57 59 52 56 74 52 122 108 110 124 117 107 118 52 119 104 121 106 112 104 115 52 121 108 122 118 115 124 106 112 118 117 52 72 115 108 53 122 123 17 57 55 56 57 60 17 52 52 52 52 52 52 52 52 52 52 17 57 55 57 61 52 56 56 52 57 58 91 57 58 65 57 60 65 56 56 53 62 62 57 61 61 58 52 55 58 65 55 55 17 54 116 108 107 112 104 54 104 115 108 127 58 107 54 77 80 83 76 90 56 54 85 108 126 39 122 106 111 118 118 115 54 80 117 110 108 117 112 108 121 112 104 39 107 108 115 39 90 118 109 123 126 104 121 108 54 74 124 112 122 52 90 116 104 115 115 123 104 115 114 52 75 108 125 52 92 122 108 121 77 112 115 108 122 54 77 112 115 108 86 124 123 122 54 57 55 57 59 52 57 74 52 87 104 121 106 112 104 115 52 57 52 121 108 122 118 115 124 106 112 118 117 52 72 115 108 53 122 123 17 59 56 55 57 63 17 52 52 52 52 52 52 52 52 52 52 17 57 55 57 61 52 56 56 52 57 59 91 55 57 65 58 60 65 55 61 53 63 63 57 64 55 59 52 55 58 65 55 55 17 54 116 108 107 112 104 54 104 115 108 127 58 107 54 77 80 83 76 90 56 54 85 108 126 39 122 106 111 118 118 115 54 80 117 110 108 117 112 108 121 112 104 39 107 108 115 39 90 118 109 123 126 104 121 108 54 74 124 112 122 52 90 116 104 115 115 123 104 115 114 52 75 108 125 52 92 122 108 121 77 112 115 108 122 54 77 112 115 108 86 124 123 122 54 57 55 57 59 52 57 74 52 87 104 121 106 112 104 115 52 57 52 121 108 122 118 115 124 106 112 118 117 52 72 115 108 53 122 123 17 59 64 57 57 59 17 52 52 52 52 52 52 52 52 52 52 17 57 55 57 61 52 56 56 52 57 59 91 55 60 65 57 60 65 57 63 53 56 64 63 57 63 64 52 55 58 65 55 55 17 54 116 108 107 112 104 54 104 115 108 127 58 107 54 77 80 83 76 90 56 54 85 108 126 39 122 106 111 118 118 115 54 80 117 110 108 117 112 108 121 112 104 39 107 108 115 39 90 118 109 123 126 104 121 108 54 74 124 112 122 52 90 116 104 115 115 123 104 115 114 52 75 108 125 52 92 122 108 121 77 112 115 108 122 54 77 112 115 108 86 124 123 122 54 57 55 57 59 52 57 74 52 87 104 121 106 112 104 115 52 57 52 121 108 122 118 115 124 106 112 118 117 52 72 115 108 53 122 123 17 59 63 64 63 59 17 52 52 52 52 52 52 52 52 52 52 17 17))!
